@@ -253,8 +253,11 @@ async function dailyNoShowScan() {
     if (!members) return;
 
     for (const member of members) {
-      const lastAttendance = member.attendance?
-        .sort((a: any, b: any) => new Date(b.check_in_time).getTime() - new Date(a.check_in_time).getTime())[0];
+      let lastAttendance: any = undefined;
+      if (member.attendance && member.attendance.length > 0) {
+        lastAttendance = [...member.attendance]
+          .sort((a: any, b: any) => new Date(b.check_in_time).getTime() - new Date(a.check_in_time).getTime())[0];
+      }
 
       const lastCheckIn = lastAttendance ? new Date(lastAttendance.check_in_time) : new Date(member.join_date);
       const daysAbsent = Math.ceil((Date.now() - lastCheckIn.getTime()) / (1000 * 60 * 60 * 24));
