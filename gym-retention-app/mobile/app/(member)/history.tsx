@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { supabase, getAttendanceHistory } from '@/services/supabase';
 import { useSocket } from '@/services/socket';
