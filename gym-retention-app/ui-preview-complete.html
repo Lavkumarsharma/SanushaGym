@@ -1,0 +1,2515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FitLocal Gym — Complete Mobile UI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --gym-black: #000000;
+            --gym-dark: #0a0a0a;
+            --gym-card: #111111;
+            --gym-green: #10b981;
+            --gym-green-hover: #34d399;
+            --gym-yellow: #fbbf24;
+            --gym-red: #ef4444;
+            --gym-blue: #3b82f6;
+            --gym-orange: #f59e0b;
+            --gym-purple: #8b5cf6;
+            --gym-gray: #6b7280;
+            --gym-text-muted: rgba(255, 255, 255, 0.5);
+            --gym-text-light: rgba(255, 255, 255, 0.7);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--gym-black);
+            color: #ffffff;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* ============ FULL PHONE FRAME ============ */
+        .phone-frame {
+            width: 390px;
+            height: 844px;
+            background: var(--gym-dark);
+            border-radius: 46px;
+            border: 4px solid #333;
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .phone-notch {
+            width: 160px;
+            height: 28px;
+            background: var(--gym-black);
+            border-radius: 0 0 16px 16px;
+            margin: 0 auto;
+            position: relative;
+            top: 14px;
+            z-index: 10;
+        }
+
+        .phone-screen {
+            flex: 1;
+            overflow-y: auto;
+            background: var(--gym-black);
+            position: relative;
+        }
+
+        .screen {
+            display: none;
+            padding: 0 20px;
+            min-height: 100%;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 20px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gym-text-light);
+            z-index: 5;
+            position: relative;
+        }
+
+        /* ============ ROLE SELECTION ============ */
+        .role-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 24px;
+            text-align: center;
+        }
+
+        .role-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 40px;
+            background: rgba(16, 185, 129, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            margin-bottom: 24px;
+        }
+
+        .role-title {
+            font-size: 34px;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+        }
+
+        .role-tagline {
+            font-size: 15px;
+            color: var(--gym-text-muted);
+            margin-bottom: 48px;
+        }
+
+        .role-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            width: 100%;
+        }
+
+        .role-card {
+            background: var(--gym-card);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            padding: 32px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .role-card:hover {
+            border-color: var(--gym-green);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .role-card.owner:hover {
+            border-color: var(--gym-purple);
+            background: rgba(139, 92, 246, 0.05);
+        }
+
+        .role-card.selected {
+            border-color: var(--gym-green);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .role-card.owner.selected {
+            border-color: var(--gym-purple);
+            background: rgba(139, 92, 246, 0.1);
+        }
+
+        .role-icon {
+            font-size: 40px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .role-name {
+            font-size: 20px;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+
+        .role-desc {
+            font-size: 13px;
+            color: var(--gym-text-muted);
+        }
+
+        /* ============ LOGIN ============ */
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            padding: 40px 24px 24px;
+        }
+
+        .login-back {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--gym-green);
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            cursor: pointer;
+        }
+
+        .login-logo {
+            width: 72px;
+            height: 72px;
+            border-radius: 36px;
+            background: rgba(16, 185, 129, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin: 0 auto 24px;
+        }
+
+        .login-title {
+            font-size: 32px;
+            font-weight: 900;
+            text-align: center;
+            color: #fff;
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+        }
+
+        .login-tagline {
+            font-size: 14px;
+            color: var(--gym-text-muted);
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .login-field {
+            margin-bottom: 16px;
+        }
+
+        .login-field label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--gym-text-muted);
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .login-input {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            padding: 14px 16px;
+            color: #fff;
+            font-size: 17px;
+            font-weight: 600;
+            width: 100%;
+        }
+
+        .login-input::placeholder {
+            color: var(--gym-text-muted);
+        }
+
+        .login-error {
+            font-size: 12px;
+            color: var(--gym-red);
+            margin-top: 6px;
+            display: none;
+        }
+
+        .login-hint {
+            font-size: 12px;
+            color: var(--gym-text-muted);
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* ============ MEMBER HOME (Image Matched) ============ */
+        .member-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .member-greeting h1 {
+            font-size: 26px;
+            font-weight: 900;
+            line-height: 1.2;
+            color: #fff;
+        }
+
+        .member-greeting p {
+            font-size: 13px;
+            color: var(--gym-text-muted);
+            margin-top: 2px;
+        }
+
+        .member-avatar {
+            width: 44px;
+            height: 44px;
+            background: rgba(16, 185, 129, 0.2);
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--gym-green);
+        }
+
+        .membership-section {
+            margin-bottom: 16px;
+        }
+
+        .membership-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--gym-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .membership-name-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 4px;
+        }
+
+        .membership-name {
+            font-size: 19px;
+            font-weight: 900;
+            color: #fff;
+        }
+
+        .membership-days-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
+        }
+
+        .membership-days-number {
+            font-size: 32px;
+            font-weight: 900;
+            color: #fff;
+        }
+
+        .membership-days-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--gym-text-muted);
+            text-transform: uppercase;
+        }
+
+        .membership-expiry {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--gym-yellow);
+        }
+
+        .membership-price-row {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .membership-price {
+            font-size: 20px;
+            font-weight: 900;
+            color: #fff;
+        }
+
+        .membership-original {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gym-text-muted);
+            text-decoration: line-through;
+        }
+
+        .btn-renew {
+            width: 100%;
+            padding: 14px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: none;
+            font-weight: 800;
+            font-size: 16px;
+        }
+
+        .btn-renew:active {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .streak-card {
+            background: var(--gym-card);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border-left: 3px solid var(--gym-green);
+        }
+
+        .streak-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .streak-emoji {
+            font-size: 18px;
+        }
+
+        .streak-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .streak-number {
+            font-size: 48px;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+
+        .streak-hint {
+            font-size: 13px;
+            color: var(--gym-text-muted);
+        }
+
+        .weekly-goal-card {
+            background: var(--gym-card);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .goal-label-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .goal-icon {
+            width: 16px;
+            height: 16px;
+            background: rgba(16, 185, 129, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: var(--gym-green);
+        }
+
+        .goal-title-text {
+            font-size: 15px;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .goal-count {
+            font-size: 15px;
+            font-weight: 900;
+            color: var(--gym-green);
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gym-green);
+            width: 100%;
+            transition: width 0.5s ease;
+        }
+
+        .day-circles {
+            display: flex;
+            gap: 10px;
+        }
+
+        .day-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 18px;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 900;
+            color: #fff;
+        }
+
+        .day-circle.completed {
+            background: var(--gym-green);
+            color: #000;
+        }
+
+        .quick-actions-card {
+            background: var(--gym-card);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .quick-actions-title {
+            font-size: 16px;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quick-icon-emoji {
+            font-size: 18px;
+        }
+
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .quick-card {
+            background: rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 16px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.2s;
+            border: none;
+        }
+
+        .quick-card:active {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .quick-icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+        }
+
+        .quick-icon {
+            font-size: 24px;
+        }
+
+        .quick-title-text {
+            font-size: 13px;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 4px;
+            line-height: 1.2;
+        }
+
+        .quick-subtitle-text {
+            font-size: 11px;
+            color: var(--gym-text-muted);
+            line-height: 1.3;
+        }
+
+        .recent-attendance-section {
+            margin-bottom: 20px;
+        }
+
+        .recent-title {
+            font-size: 16px;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px 20px;
+            color: var(--gym-text-muted);
+        }
+
+        .empty-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+            opacity: 0.3;
+            display: block;
+        }
+
+        /* ============ QR CHECK-IN ============ */
+        .qr-header {
+            margin-bottom: 16px;
+        }
+
+        .scanner-container {
+            aspect-ratio: 1;
+            width: 100%;
+            background: rgba(255,255,255,0.03);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+
+        .scanner-frame {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 68%;
+            height: 68%;
+            border: 2px solid rgba(16, 185, 129, 0.3);
+            border-radius: 20px;
+        }
+
+        .scanner-corner {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2.5px solid var(--gym-green);
+        }
+
+        .corner-tl { top: -2.5px; left: -2.5px; border-right: none; border-bottom: none; }
+        .corner-tr { top: -2.5px; right: -2.5px; border-left: none; border-bottom: none; }
+        .corner-bl { bottom: -2.5px; left: -2.5px; border-right: none; border-top: none; }
+        .corner-br { bottom: -2.5px; right: -2.5px; border-left: none; border-top: none; }
+
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gym-green);
+            box-shadow: 0 0 12px var(--gym-green);
+            animation: scanMove 1.8s linear infinite;
+        }
+
+        @keyframes scanMove {
+            0% { top: 0; opacity: 1; }
+            100% { top: 100%; opacity: 1; }
+        }
+
+        .scan-hint {
+            position: absolute;
+            bottom: -36px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: var(--gym-text-muted);
+            font-weight: 600;
+        }
+
+        .qr-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.04);
+            border-radius: 16px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+        }
+
+        .qr-info h4 {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--gym-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .qr-code {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--gym-green);
+            font-family: 'Courier New', monospace;
+            margin-top: 3px;
+        }
+
+        .toggle-scan {
+            width: 42px;
+            height: 42px;
+            border-radius: 21px;
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--gym-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            cursor: pointer;
+        }
+
+        .manual-entry {
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input {
+            flex: 1;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 12px 14px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .input::placeholder {
+            color: var(--gym-text-muted);
+        }
+
+        /* ============ RESULT POPUP (TRIGGER ONLY) ============ */
+        .result-popup {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 24px;
+            padding: 26px;
+            text-align: center;
+            width: 82%;
+            max-width: 320px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            color: #000;
+            animation: popupSlide 0.3s ease-out;
+        }
+
+        @keyframes popupSlide {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-icon {
+            font-size: 52px;
+            margin-bottom: 18px;
+        }
+
+        .result-title {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .result-message {
+            font-size: 14px;
+            color: rgba(0,0,0,0.7);
+            margin-bottom: 22px;
+        }
+
+        .result-btn {
+            background: #fff;
+            color: #000;
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            width: auto;
+        }
+
+        .result-btn:active {
+            transform: scale(0.96);
+        }
+
+        /* ============ RENEWAL ============ */
+        .plan-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .plan-card {
+            flex: 1;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            padding: 14px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .plan-card:active {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .plan-card.selected {
+            background: var(--gym-green);
+            color: #000;
+            border-color: var(--gym-green);
+        }
+
+        .plan-label {
+            font-size: 13px;
+            font-weight: 800;
+            margin-bottom: 3px;
+        }
+
+        .plan-price {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--gym-text-muted);
+            margin-bottom: 4px;
+        }
+
+        .plan-discount {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--gym-green);
+            margin-top: 2px;
+        }
+
+        .plan-card.selected .plan-discount { color: #000; }
+
+        .pricing-breakdown {
+            margin-bottom: 16px;
+        }
+
+        .pricing-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .pricing-label {
+            font-size: 13px;
+            color: var(--gym-text-muted);
+        }
+
+        .pricing-value {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .pricing-value-final {
+            color: var(--gym-green);
+            font-size: 16px;
+        }
+
+        .pricing-divider {
+            border-top: 1px solid rgba(255,255,255,0.2);
+            margin: 8px 0;
+        }
+
+        .benefits-list {
+            margin-bottom: 16px;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .benefit-check {
+            color: var(--gym-green);
+            font-weight: 800;
+            font-size: 16px;
+        }
+
+        .benefit-text {
+            font-size: 13px;
+            color: var(--gym-text-light);
+            line-height: 1.4;
+        }
+
+        .terms-box {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 14px;
+            margin-bottom: 16px;
+        }
+
+        .terms-box h4 {
+            font-size: 13px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .term-item {
+            font-size: 12px;
+            color: var(--gym-text-light);
+            margin-bottom: 4px;
+            line-height: 1.4;
+        }
+
+        .payment-state {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 16px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .payment-state.failed {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .payment-state.pending {
+            background: rgba(251, 191, 36, 0.1);
+            border-color: rgba(251, 191, 36, 0.3);
+        }
+
+        .state-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--gym-green);
+        }
+
+        .state-dot.failed { background: var(--gym-red); }
+        .state-dot.pending { background: var(--gym-yellow); }
+
+        .state-text {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* ============ ADD-ONS (Image Matched Theme) ============ */
+        .addon-header-screen {
+            font-size: 22px;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .addon-subtitle {
+            font-size: 14px;
+            color: var(--gym-text-muted);
+            margin-bottom: 20px;
+        }
+
+        .addon-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .addon-card {
+            background: var(--gym-card);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 0;
+        }
+
+        .addon-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .addon-name {
+            font-size: 18px;
+            font-weight: 900;
+            color: #fff;
+            line-height: 1.2;
+        }
+
+        .addon-validity {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gym-text-muted);
+            text-align: right;
+        }
+
+        .addon-validity-days {
+            color: var(--gym-green);
+        }
+
+        .addon-category {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--gym-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        .addon-price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin: 10px 0 8px;
+        }
+
+        .addon-price {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--gym-green);
+        }
+
+        .addon-stock-badge {
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .addon-stock-badge.ok {
+            color: var(--gym-green);
+        }
+
+        .addon-stock-badge.low {
+            color: var(--gym-orange);
+        }
+
+        .addon-divider {
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+            margin: 12px 0;
+        }
+
+        .addon-trainer-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .addon-trainer-icon {
+            width: 14px;
+            height: 14px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            color: #fff;
+        }
+
+        .addon-trainer-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .addon-trainer-qual {
+            font-size: 11px;
+            color: var(--gym-text-muted);
+            margin-top: 2px;
+        }
+
+        .addon-terms {
+            font-size: 11px;
+            color: var(--gym-text-muted);
+            line-height: 1.5;
+            margin-top: 10px;
+        }
+
+        .addon-hint {
+            font-size: 12px;
+            color: var(--gym-text-muted);
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* ============ HISTORY ============ */
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .history-item {
+            background: var(--gym-card);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            padding: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-info {
+            flex: 1;
+        }
+
+        .history-time {
+            font-size: 15px;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .history-date {
+            font-size: 12px;
+            color: var(--gym-text-muted);
+            margin-top: 2px;
+        }
+
+        .history-source {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--gym-green);
+            margin-top: 4px;
+        }
+
+        .history-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--gym-green);
+            margin-right: 10px;
+        }
+
+        /* ============ SETTINGS ============ */
+        .settings-item {
+            background: var(--gym-card);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .settings-info {
+            flex: 1;
+        }
+
+        .settings-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .settings-subtitle {
+            font-size: 12px;
+            color: var(--gym-text-muted);
+            margin-top: 2px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 26px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 13px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: var(--gym-green);
+        }
+
+        .toggle-knob {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 22px;
+            height: 22px;
+            background: #fff;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch.active .toggle-knob {
+            transform: translateX(22px);
+        }
+
+        .marketing-note {
+            font-size: 11px;
+            color: var(--gym-text-muted);
+            margin-top: 10px;
+            line-height: 1.4;
+        }
+
+        /* ============ OWNER DASHBOARD (MOBILE) ============ */
+        .owner-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .owner-greeting h1 {
+            font-size: 20px;
+            font-weight: 900;
+        }
+
+        .owner-greeting p {
+            font-size: 13px;
+            color: var(--gym-text-muted);
+            margin-top: 2px;
+        }
+
+        .owner-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .owner-stat {
+            background: var(--gym-card);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 14px;
+        }
+
+        .owner-stat-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--gym-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .owner-stat-value {
+            font-size: 20px;
+            font-weight: 900;
+            color: #fff;
+            margin-top: 4px;
+        }
+
+        .owner-stat-change {
+            font-size: 10px;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        .owner-stat-change.up { color: var(--gym-green); }
+        .owner-stat-change.down { color: var(--gym-red); }
+
+        .owner-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .owner-list-item {
+            background: var(--gym-card);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            padding: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .owner-list-info {
+            flex: 1;
+        }
+
+        .owner-list-name {
+            font-size: 14px;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .owner-list-phone {
+            font-size: 12px;
+            color: var(--gym-text-muted);
+            margin-top: 2px;
+        }
+
+        .owner-list-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .owner-list-meta div {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--gym-text-light);
+        }
+
+        .owner-list-absent {
+            color: var(--gym-orange);
+        }
+
+        .owner-list-expiry {
+            color: var(--gym-yellow);
+        }
+
+        /* ============ BOTTOM NAV ============ */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 0;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            background: #000;
+            position: fixed;
+            bottom: env(safe-area-inset-bottom, 0);
+            left: 20px;
+            right: 20px;
+            border-radius: 16px 16px 0 0;
+            z-index: 100;
+        }
+
+        .nav-tab {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--gym-text-muted);
+            font-size: 10px;
+            font-weight: 800;
+            text-decoration: none;
+            padding: 8px 4px;
+            min-width: 60px;
+        }
+
+        .nav-tab.active {
+            color: var(--gym-green);
+        }
+
+        .nav-tab.owner-active {
+            color: var(--gym-purple);
+        }
+
+        .nav-icon {
+            font-size: 22px;
+            margin-bottom: 2px;
+        }
+
+        /* ============ OWNER SWITCH ============ */
+        .owner-switch {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 200;
+        }
+
+        .owner-btn {
+            background: var(--gym-purple);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 8px 14px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* ============ LOADING ============ */
+        .loading-spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(16, 185, 129, 0.3);
+            border-top-color: var(--gym-green);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hint {
+            font-size: 12px;
+            color: var(--gym-text-muted);
+            text-align: center;
+            margin-top: 6px;
+        }
+
+        @media (max-width: 420px) {
+            .phone-frame {
+                width: 100%;
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            .bottom-nav {
+                left: 0;
+                right: 0;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="phone-frame">
+    <div class="phone-notch"></div>
+
+    <!-- Owner Switch Button (top left) -->
+    <div class="owner-switch">
+        <button class="owner-btn" onclick="toggleOwnerMode()" style="display:none;" id="ownerSwitchBtn">👔 Owner</button>
+    </div>
+
+    <div class="phone-screen">
+        <!-- ============ ROLE SELECTION ============ -->
+        <div class="screen active" id="screen-role">
+            <div class="role-container">
+                <div class="role-logo">💪</div>
+                <div class="role-title">FitLocal Gym</div>
+                <div class="role-tagline">Select your role to continue</div>
+                <div class="role-grid">
+                    <div class="role-card selected" onclick="selectRole('member', this)">
+                        <span class="role-icon">👤</span>
+                        <div class="role-name">Member</div>
+                        <div class="role-desc">Login with mobile number</div>
+                    </div>
+                    <div class="role-card" onclick="selectRole('owner', this)">
+                        <span class="role-icon">👔</span>
+                        <div class="role-name">Owner / Staff</div>
+                        <div class="role-desc">Dashboard & management</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ MEMBER LOGIN ============ -->
+        <div class="screen" id="screen-member-login">
+            <div class="login-container">
+                <div class="login-back" onclick="showScreen('role')">← Back</div>
+                <div class="login-logo">💪</div>
+                <div class="login-title">Welcome Back</div>
+                <div class="login-tagline">Enter your mobile number to continue</div>
+
+                <div class="login-field">
+                    <label>Mobile Number</label>
+                    <div style="display:flex; gap:8px;">
+                        <span style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:14px 0 0 14px; padding:14px 16px; color:#fff; font-weight:700; font-size:17px;">+91</span>
+                        <input type="tel" class="login-input" id="member-phone" placeholder="98765 43210" maxlength="10">
+                    </div>
+                    <div class="login-error" id="member-login-error">Invalid mobile number</div>
+                </div>
+
+                <button class="btn btn-primary" onclick="doMemberLogin()">Send OTP</button>
+                <div class="login-hint">OTP will be sent to your number</div>
+            </div>
+        </div>
+
+        <!-- ============ OWNER LOGIN ============ -->
+        <div class="screen" id="screen-owner-login">
+            <div class="login-container">
+                <div class="login-back" onclick="showScreen('role')">← Back</div>
+                <div class="login-logo">👔</div>
+                <div class="login-title">Owner Login</div>
+                <div class="login-tagline">Staff credentials required</div>
+
+                <div class="login-field">
+                    <label>Staff ID</label>
+                    <input type="text" class="login-input" id="owner-staff-id" placeholder="e.g. OWNER001">
+                </div>
+
+                <div class="login-field">
+                    <label>Password</label>
+                    <input type="password" class="login-input" id="owner-password" placeholder="••••••••">
+                </div>
+                <div class="login-error" id="owner-login-error">Invalid credentials</div>
+
+                <button class="btn btn-primary" onclick="doOwnerLogin()">Sign In</button>
+                <div class="login-hint">Contact gym owner for access</div>
+            </div>
+        </div>
+
+        <!-- ============ MEMBER HOME ============ -->
+        <div class="screen" id="screen-home">
+            <div class="status-bar">
+                <span>9:41 AM</span>
+                <span>📶 4G</span>
+                <span>🔋 85%</span>
+            </div>
+
+            <div class="member-header">
+                <div class="member-greeting">
+                    <h1>Namaste, Rajesh</h1>
+                    <p>Ready for today's workout?</p>
+                </div>
+                <div class="member-avatar">R</div>
+            </div>
+
+            <div class="membership-section">
+                <div class="membership-label">Active Membership</div>
+                <div class="membership-name-row">
+                    <div class="membership-name">Gym Unlimited</div>
+                    <div class="membership-days-container">
+                        <div class="membership-days-number" id="days-left">5</div>
+                        <div class="membership-days-label">Days Left</div>
+                    </div>
+                </div>
+                <div class="membership-price-row">
+                    <div class="membership-price">₹<span class="rupee">1,299</span></div>
+                    <div class="membership-original">₹1,499</div>
+                </div>
+                <div class="membership-expiry">Expires Mar 15</div>
+                <button class="btn btn-primary btn-renew" onclick="showScreen('renewal')">Renew</button>
+            </div>
+
+            <div class="streak-card">
+                <div class="streak-header">
+                    <span class="streak-emoji">🔥</span>
+                    <div class="streak-title">Your Streak</div>
+                </div>
+                <div class="streak-number" id="streak-count">23</div>
+                <div class="streak-hint">Keep it going! Every check-in counts.</div>
+            </div>
+
+            <div class="weekly-goal-card">
+                <div class="goal-header">
+                    <div class="goal-label-row">
+                        <div class="goal-icon">📅</div>
+                        <div class="goal-title-text">Weekly Goal</div>
+                    </div>
+                    <div class="goal-count">4 / 4 this week</div>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill"></div>
+                </div>
+                <div class="day-circles">
+                    <div class="day-circle completed">1</div>
+                    <div class="day-circle completed">2</div>
+                    <div class="day-circle completed">3</div>
+                    <div class="day-circle completed">4</div>
+                </div>
+            </div>
+
+            <div class="quick-actions-card">
+                <div class="quick-actions-title">
+                    <span class="quick-icon-emoji">⚡</span>
+                    <span>Quick Actions</span>
+                </div>
+                <div class="quick-grid">
+                    <div class="quick-card" onclick="showScreen('qr')">
+                        <div class="quick-icon-box">
+                            <span class="quick-icon">📱</span>
+                        </div>
+                        <div class="quick-title-text">Check-In</div>
+                        <div class="quick-subtitle-text">Scan QR</div>
+                    </div>
+                    <div class="quick-card" onclick="showScreen('renewal')">
+                        <div class="quick-icon-box">
+                            <span class="quick-icon">💳</span>
+                        </div>
+                        <div class="quick-title-text">Renewal</div>
+                        <div class="quick-subtitle-text">Plan ahead</div>
+                    </div>
+                    <div class="quick-card">
+                        <div class="quick-icon-box">
+                            <span class="quick-icon">🏋️</span>
+                        </div>
+                        <div class="quick-title-text">Add-Ons</div>
+                        <div class="quick-subtitle-text">PT • Diet • Supplements</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="recent-attendance-section">
+                <div class="recent-title">
+                    <span class="quick-icon-emoji">📊</span>
+                    <span>Recent Check-Ins</span>
+                </div>
+                <div class="empty-state">
+                    <span class="empty-icon">📅</span>
+                    <div>No check-ins yet</div>
+                    <div class="hint">Scan the gym QR to start your streak.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ QR CHECK-IN ============ -->
+        <div class="screen" id="screen-qr">
+            <div class="status-bar">
+                <span>9:42 AM</span>
+                <span>📶 4G</span>
+                <span>🔋 85%</span>
+            </div>
+
+            <div class="qr-header">
+                <div class="screen-title">QR Check-In</div>
+                <div class="screen-subtitle">Scan session-bound QR at gym entrance</div>
+            </div>
+
+            <div class="scanner-container">
+                <div class="scanner-frame">
+                    <div class="scanner-corner corner-tl"></div>
+                    <div class="scanner-corner corner-tr"></div>
+                    <div class="scanner-corner corner-bl"></div>
+                    <div class="scanner-corner corner-br"></div>
+                </div>
+                <div class="scan-line"></div>
+                <div class="scan-hint">Position QR code inside the frame</div>
+            </div>
+
+            <div class="qr-status">
+                <div class="qr-info">
+                    <h4>Session QR</h4>
+                    <div class="qr-code" id="qr-display">Waiting to scan…</div>
+                </div>
+                <div class="toggle-scan" id="scan-toggle">▶️</div>
+            </div>
+
+            <div class="hint">QR rotates every 10 minutes • Valid only for current session</div>
+
+            <div class="manual-entry">
+                <div class="section-title">⌨️ Manual Entry (Front Desk)</div>
+                <div class="input-group">
+                    <input type="text" class="input" id="manual-qr" placeholder="Enter QR code">
+                    <button class="btn btn-primary" style="width:auto; padding:12px 20px; font-size:14px;" onclick="verifyManual()">Verify</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ HISTORY ============ -->
+        <div class="screen" id="screen-history">
+            <div class="status-bar">
+                <span>9:43 AM</span>
+                <span>📶 4G</span>
+                <span>🔋 85%</span>
+            </div>
+
+            <div class="qr-header">
+                <div class="screen-title">Attendance History</div>
+                <div class="screen-subtitle">Your check-in records</div>
+            </div>
+
+            <div class="card">
+                <div class="history-list">
+                    <div class="history-item">
+                        <div class="history-info">
+                            <span class="history-dot"></span>
+                            <div class="history-time">07:15 AM</div>
+                            <div class="history-date">Mar 10, 2025</div>
+                            <div class="history-source">QR Check-In</div>
+                        </div>
+                        <span class="badge badge-green">Success</span>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-info">
+                            <span class="history-dot" style="background:var(--gym-blue);"></span>
+                            <div class="history-time">06:45 AM</div>
+                            <div class="history-date">Mar 09, 2025</div>
+                            <div class="history-source">QR Check-In</div>
+                        </div>
+                        <span class="badge badge-green">Success</span>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-info">
+                            <span class="history-dot" style="background:var(--gym-blue);"></span>
+                            <div class="history-time">07:30 AM</div>
+                            <div class="history-date">Mar 08, 2025</div>
+                            <div class="history-source">Assisted (Staff)</div>
+                        </div>
+                        <span class="badge badge-green">Success</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ ADD-ONS (Image Matched Theme) ============ -->
+        <div class="screen" id="screen-addons">
+            <div class="status-bar">
+                <span>9:44 AM</span>
+                <span>📶 4G</span>
+                <span>🔋 85%</span>
+            </div>
+
+            <div class="qr-header">
+                <div class="addon-header-screen">Add-Ons</div>
+                <div class="addon-subtitle">Personal Training • Diet Plans • Supplements</div>
+            </div>
+
+            <div class="addon-grid">
+                <!-- Personal Training -->
+                <div class="addon-card">
+                    <div class="addon-top">
+                        <div class="addon-name">Personal Training - 8 Sessions</div>
+                        <div class="addon-validity">Valid <span class="addon-validity-days">30</span> days</div>
+                    </div>
+                    <div class="addon-category">Personal Training</div>
+                    <div class="addon-price-row">
+                        <div class="addon-price">₹4,999</div>
+                        <div class="addon-stock-badge ok">In Stock</div>
+                    </div>
+                    <div class="addon-divider"></div>
+                    <div class="addon-trainer-row">
+                        <div class="addon-trainer-icon">👤</div>
+                        <div>
+                            <div class="addon-trainer-name">Arjun Patel</div>
+                            <div class="addon-trainer-qual">NASM-CPT, ACE</div>
+                        </div>
+                    </div>
+                    <div class="addon-terms">7-day notice, refund for unused sessions</div>
+                </div>
+
+                <!-- Diet Plan -->
+                <div class="addon-card">
+                    <div class="addon-top">
+                        <div class="addon-name">Custom Diet Plan</div>
+                        <div class="addon-validity">Valid <span class="addon-validity-days">30</span> days</div>
+                    </div>
+                    <div class="addon-category">Diet Plan</div>
+                    <div class="addon-price-row">
+                        <div class="addon-price">₹2,499</div>
+                        <div class="addon-stock-badge ok">In Stock</div>
+                    </div>
+                    <div class="addon-divider"></div>
+                    <div class="addon-trainer-row">
+                        <div class="addon-trainer-icon">👤</div>
+                        <div>
+                            <div class="addon-trainer-name">Neha Sharma</div>
+                            <div class="addon-trainer-qual">ISSN Nutritionist</div>
+                        </div>
+                    </div>
+                    <div class="addon-terms">Non-refundable once generated</div>
+                </div>
+
+                <!-- Whey Protein -->
+                <div class="addon-card">
+                    <div class="addon-top">
+                        <div class="addon-name">Whey Protein 1kg</div>
+                        <div class="addon-validity">Valid <span class="addon-validity-days">60</span> days</div>
+                    </div>
+                    <div class="addon-category">Supplement</div>
+                    <div class="addon-price-row">
+                        <div class="addon-price">₹2,999</div>
+                        <div class="addon-stock-badge low">12 Left</div>
+                    </div>
+                    <div class="addon-divider"></div>
+                    <div class="addon-trainer-row">
+                        <div class="addon-trainer-icon">-</div>
+                        <div>
+                            <div class="addon-trainer-name">-</div>
+                            <div class="addon-trainer-qual">-</div>
+                        </div>
+                    </div>
+                    <div class="addon-terms">Unopened only, 48-hour window</div>
+                </div>
+
+                <!-- Pre-Workout -->
+                <div class="addon-card">
+                    <div class="addon-top">
+                        <div class="addon-name">Pre-Workout 30 Servings</div>
+                        <div class="addon-validity">Valid <span class="addon-validity-days">90</span> days</div>
+                    </div>
+                    <div class="addon-category">Supplement</div>
+                    <div class="addon-price-row">
+                        <div class="addon-price">₹1,499</div>
+                        <div class="addon-stock-badge low">3 Left</div>
+                    </div>
+                    <div class="addon-divider"></div>
+                    <div class="addon-trainer-row">
+                        <div class="addon-trainer-icon">-</div>
+                        <div>
+                            <div class="addon-trainer-name">-</div>
+                            <div class="addon-trainer-qual">-</div>
+                        </div>
+                    </div>
+                    <div class="addon-terms">Unopened only, 48-hour window</div>
+                </div>
+            </div>
+
+            <div class="addon-hint">Add-ons are never auto-selected</div>
+        </div>
+
+        <!-- ============ RENEWAL ============ -->
+        <div class="screen" id="screen-renewal">
+            <div class="status-bar">
+                <span>9:43 AM</span>
+                <span>📶 4G</span>
+                <span>🔋 85%</span>
+            </div>
+
+            <div class="qr-header">
+                <div class="screen-title">Renew Membership</div>
+                <div class="screen-subtitle">Your current plan expires on Mar 15, 2025</div>
+            </div>
+
+            <div class="card">
+                <div class="section-title">📋 Choose Plan</div>
+                <div class="plan-row">
+                    <div class="plan-card" onclick="selectPlan(0)">
+                        <div class="plan-label">3 Months</div>
+                        <div class="plan-price">₹3,999</div>
+                    </div>
+                    <div class="plan-card selected" onclick="selectPlan(1)">
+                        <div class="plan-label">6 Months</div>
+                        <div class="plan-price">₹6,999</div>
+                        <div class="plan-discount">Save ₹500</div>
+                    </div>
+                    <div class="plan-card" onclick="selectPlan(2)">
+                        <div class="plan-label">12 Months</div>
+                        <div class="plan-price">₹12,499</div>
+                        <div class="plan-discount">Save ₹1,500</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card pricing-breakdown">
+                <div class="section-title">💰 Pricing</div>
+                <div class="pricing-row">
+                    <span class="pricing-label">Base Price</span>
+                    <span class="pricing-value" id="base-price">₹6,999</span>
+                </div>
+                <div class="pricing-row">
+                    <span class="pricing-label">Discount</span>
+                    <span class="pricing-value" id="discount-val" style="color:var(--gym-green)">-₹500</span>
+                </div>
+                <div class="pricing-divider"></div>
+                <div class="pricing-row">
+                    <span class="pricing-label pricing-label-final">Final Amount</span>
+                    <span class="pricing-value pricing-value-final" id="final-amt">₹6,499</span>
+                </div>
+            </div>
+
+            <div class="card benefits-list">
+                <div class="section-title">✨ Included Benefits</div>
+                <div class="benefit-item">
+                    <span class="benefit-check">✅</span>
+                    <span class="benefit-text">Gym access</span>
+                </div>
+                <div class="benefit-item">
+                    <span class="benefit-check">✅</span>
+                    <span class="benefit-text">2 guest passes/month</span>
+                </div>
+                <div class="benefit-item">
+                    <span class="benefit-check">✅</span>
+                    <span class="benefit-text">1 free personal training session</span>
+                </div>
+            </div>
+
+            <div class="card terms-box">
+                <div class="section-title">📄 Terms</div>
+                <div class="term-item">• Membership activates only after payment is verified by the provider.</div>
+                <div class="term-item">• Simulated payments until a real provider is connected. No card/UPI details stored.</div>
+                <div class="term-item">• No refunds once membership is activated, except as per provider policy.</div>
+                <div class="term-item">• Add-ons are never auto-selected. Cancel within terms for eligible refunds.</div>
+            </div>
+
+            <div class="payment-state" id="payment-state">
+                <div class="state-dot" id="state-dot"></div>
+                <div class="state-text" id="payment-state-text">Processing…</div>
+            </div>
+
+            <button class="btn btn-primary" id="pay-btn" onclick="processPayment()" style="width:100%; padding:16px;">Pay ₹6,499</button>
+            <div class="hint">UPI / Card / Wallet • ₹6,499</div>
+        </div>
+
+        <!-- ============ SETTINGS ============ -->
+        <div class="screen" id="screen-settings">
+            <div class="status-bar">
+                <span>9:45 AM</span>
+                <span>📶 4G</span>
+                <span>🔋 85%</span>
+            </div>
+
+            <div class="qr-header">
+                <div class="screen-title">Settings</div>
+                <div class="screen-subtitle">Manage your preferences</div>
+            </div>
+
+            <div class="settings-item">
+                <div class="settings-info">
+                    <div class="settings-title">Push Notifications</div>
+                    <div class="settings-subtitle">Get gym alerts and reminders</div>
+                </div>
+                <div class="toggle-switch active" id="toggle-push" onclick="toggleSwitch('push')">
+                    <div class="toggle-knob"></div>
+                </div>
+            </div>
+
+            <div class="settings-item">
+                <div class="settings-info">
+                    <div class="settings-title">SMS Alerts</div>
+                    <div class="settings-subtitle">Receive check-in and renewal SMS</div>
+                </div>
+                <div class="toggle-switch active" id="toggle-sms" onclick="toggleSwitch('sms')">
+                    <div class="toggle-knob"></div>
+                </div>
+            </div>
+
+            <div class="settings-item">
+                <div class="settings-info">
+                    <div class="settings-title">Email Updates</div>
+                    <div class="settings-subtitle">Weekly progress and offers</div>
+                </div>
+                <div class="toggle-switch active" id="toggle-email" onclick="toggleSwitch('email')">
+                    <div class="toggle-knob"></div>
+                </div>
+            </div>
+
+            <div class="settings-item">
+                <div class="settings-info">
+                    <div class="settings-title">WhatsApp Messages</div>
+                    <div class="settings-subtitle">Class reminders and PT booking</div>
+                </div>
+                <div class="toggle-switch active" id="toggle-whatsapp" onclick="toggleSwitch('whatsapp')">
+                    <div class="toggle-knob"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="settings-title">Marketing Communications</div>
+                <div class="toggle-switch active" id="toggle-marketing" onclick="toggleSwitch('marketing')">
+                    <div class="toggle-knob"></div>
+                </div>
+                <div class="marketing-note">Offers, add-ons, and promotions from FitLocal Gym. You can opt out anytime.</div>
+            </div>
+
+            <div class="settings-item">
+                <div class="settings-info">
+                    <div class="settings-title">Language</div>
+                    <div class="settings-subtitle">English / Hinglish</div>
+                </div>
+                <span style="font-size:14px; font-weight:600; color:var(--gym-text-muted);">›</span>
+            </div>
+
+            <div class="settings-item">
+                <div class="settings-info">
+                    <div class="settings-title">Biometric Auth</div>
+                    <div class="settings-subtitle">Secure app access</div>
+                </div>
+                <div class="toggle-switch" id="toggle-bio" onclick="toggleSwitch('bio')">
+                    <div class="toggle-knob"></div>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" style="margin-top:24px;">Save Preferences</button>
+        </div>
+
+        <!-- ============ OWNER DASHBOARD (MOBILE) ============ -->
+        <div class="screen" id="screen-owner-dashboard">
+            <div class="status-bar">
+                <span>9:50 AM</span>
+                <span>📶 4G</span>
+                <span>🔋 85%</span>
+            </div>
+
+            <div class="owner-header">
+                <div class="owner-greeting">
+                    <h1>Owner Dashboard</h1>
+                    <p>Welcome back, Suresh Rao</p>
+                </div>
+                <span class="badge badge-purple">Owner</span>
+            </div>
+
+            <div class="owner-stats">
+                <div class="owner-stat">
+                    <div class="owner-stat-title">Active Members</div>
+                    <div class="owner-stat-value">1,234</div>
+                    <div class="owner-stat-change up">↑ 12 vs last week</div>
+                </div>
+                <div class="owner-stat">
+                    <div class="owner-stat-title">Today's Check-Ins</div>
+                    <div class="owner-stat-value">89</div>
+                    <div class="owner-stat-change up">↑ 5 vs last week</div>
+                </div>
+                <div class="owner-stat">
+                    <div class="owner-stat-title">No-Show Cases</div>
+                    <div class="owner-stat-value">23</div>
+                    <div class="owner-stat-change up">↑ 8 vs last week</div>
+                </div>
+                <div class="owner-stat">
+                    <div class="owner-stat-title">Renewals Due</div>
+                    <div class="owner-stat-value">14</div>
+                    <div class="owner-stat-change up">↑ 3 vs last week</div>
+                </div>
+            </div>
+
+            <div class="owner-stats" style="margin-bottom:16px;">
+                <div class="owner-stat">
+                    <div class="owner-stat-title">7-Day Active</div>
+                    <div class="owner-stat-value">456</div>
+                    <div class="owner-stat-change down">↓ 2 vs last week</div>
+                </div>
+                <div class="owner-stat">
+                    <div class="owner-stat-title">Add-On Revenue</div>
+                    <div class="owner-stat-value">₹45,000</div>
+                    <div class="owner-stat-change up">↑ 12% vs last week</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="section-title">🚩 Red List — Needs Follow-Up</div>
+                <div class="owner-list">
+                    <div class="owner-list-item">
+                        <div class="owner-list-info">
+                            <div class="owner-list-name">Rajesh Kumar</div>
+                            <div class="owner-list-phone">+91 98765 43210</div>
+                        </div>
+                        <div class="owner-list-meta">
+                            <div>Monthly</div>
+                            <div class="owner-list-absent">14 days absent</div>
+                            <div class="owner-list-expiry">Expires Mar 15</div>
+                            <div>Trainer: Arjun Patel</div>
+                        </div>
+                        <div style="display:flex; gap:6px;">
+                            <button class="btn-sm btn-sm-green">Call</button>
+                            <button class="btn-sm btn-sm-blue">WhatsApp</button>
+                        </div>
+                    </div>
+                    <div class="owner-list-item">
+                        <div class="owner-list-info">
+                            <div class="owner-list-name">Sunita Devi</div>
+                            <div class="owner-list-phone">+91 98765 43211</div>
+                        </div>
+                        <div class="owner-list-meta">
+                            <div>Quarterly</div>
+                            <div class="owner-list-absent">11 days absent</div>
+                            <div class="owner-list-expiry">Expires Mar 18</div>
+                            <div>Trainer: Neha Sharma</div>
+                        </div>
+                        <div style="display:flex; gap:6px;">
+                            <button class="btn-sm btn-sm-green">Call</button>
+                            <button class="btn-sm btn-sm-blue">WhatsApp</button>
+                        </div>
+                    </div>
+                    <div class="owner-list-item">
+                        <div class="owner-list-info">
+                            <div class="owner-list-name">Manoj Bhai</div>
+                            <div class="owner-list-phone">+91 98765 43212</div>
+                        </div>
+                        <div class="owner-list-meta">
+                            <div>Half-Yearly</div>
+                            <div class="owner-list-absent">18 days absent</div>
+                            <div class="owner-list-expiry">Expires Mar 20</div>
+                            <div>Trainer: Ravi Kumar</div>
+                        </div>
+                        <div style="display:flex; gap:6px;">
+                            <button class="btn-sm btn-sm-green">Call</button>
+                            <button class="btn-sm btn-sm-blue">WhatsApp</button>
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align:center; margin-top:12px;">
+                    <button class="btn-sm btn-sm-purple" style="width:auto;">View All →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ OWNER RED LIST ============ -->
+        <div class="screen" id="screen-owner-redlist">
+            <div class="status-bar">
+                <span>9:51 AM</span>
+                <span>📶 4G</span>
+                <span>🔋 85%</span>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <div class="screen-title">Red List</div>
+                <button class="btn-sm btn-sm-purple" onclick="showScreen('owner-dashboard')">← Back</button>
+            </div>
+            <div class="screen-subtitle">Members absent ≥ 10 days with active membership</div>
+
+            <div class="owner-list">
+                <div class="owner-list-item">
+                    <div class="owner-list-info">
+                        <div class="owner-list-name">Rajesh Kumar</div>
+                        <div class="owner-list-phone">+91 98765 43210</div>
+                    </div>
+                    <div class="owner-list-meta">
+                        <div>Monthly • Expires Mar 15</div>
+                        <div class="owner-list-absent">14 days absent</div>
+                        <div>Trainer: Arjun Patel</div>
+                        <div>Last Check-In: Feb 28, 2025</div>
+                    </div>
+                    <div style="display:flex; gap:6px;">
+                        <button class="btn-sm btn-sm-green">Call</button>
+                        <button class="btn-sm btn-sm-blue">WhatsApp</button>
+                        <button class="btn-sm btn-sm-red">Mark Outcome</button>
+                    </div>
+                </div>
+                <div class="owner-list-item">
+                    <div class="owner-list-info">
+                        <div class="owner-list-name">Sunita Devi</div>
+                        <div class="owner-list-phone">+91 98765 43211</div>
+                    </div>
+                    <div class="owner-list-meta">
+                        <div>Quarterly • Expires Mar 18</div>
+                        <div class="owner-list-absent">11 days absent</div>
+                        <div>Trainer: Neha Sharma</div>
+                        <div>Last Check-In: Mar 01, 2025</div>
+                    </div>
+                    <div style="display:flex; gap:6px;">
+                        <button class="btn-sm btn-sm-green">Call</button>
+                        <button class="btn-sm btn-sm-blue">WhatsApp</button>
+                        <button class="btn-sm btn-sm-red">Mark Outcome</button>
+                    </div>
+                </div>
+                <div class="owner-list-item">
+                    <div class="owner-list-info">
+                        <div class="owner-list-name">Manoj Bhai</div>
+                        <div class="owner-list-phone">+91 98765 43212</div>
+                    </div>
+                    <div class="owner-list-meta">
+                        <div>Half-Yearly • Expires Mar 20</div>
+                        <div class="owner-list-absent">18 days absent</div>
+                        <div>Trainer: Ravi Kumar</div>
+                        <div>Last Check-In: Mar 05, 2025</div>
+                    </div>
+                    <div style="display:flex; gap:6px;">
+                        <button class="btn-sm btn-sm-green">Call</button>
+                        <button class="btn-sm btn-sm-blue">WhatsApp</button>
+                        <button class="btn-sm btn-sm-red">Mark Outcome</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ OWNER FOLLOW-UPS ============ -->
+        <div class="screen" id="screen-owner-followups">
+            <div class="status-bar">
+                <span>9:52 AM</span>
+                <span>📶 4G</span>
+                <span>🔋 85%</span>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <div class="screen-title">Follow-Ups</div>
+                <button class="btn-sm btn-sm-purple" onclick="showScreen('owner-dashboard')">← Back</button>
+            </div>
+            <div class="screen-subtitle">Track follow-up outcomes for red-list members</div>
+
+            <div class="card">
+                <div class="owner-list">
+                    <div class="owner-list-item">
+                        <div class="owner-list-info">
+                            <div class="owner-list-name">Rajesh Kumar</div>
+                            <div class="owner-list-phone">Will Return</div>
+                        </div>
+                        <div class="owner-list-meta">
+                            <div>Next Action: Mar 20, 2025</div>
+                            <div>Spoke to member, will return next week</div>
+                            <div>Created: Mar 15, 2025</div>
+                        </div>
+                        <span class="badge badge-green">Scheduled</span>
+                    </div>
+                    <div class="owner-list-item">
+                        <div class="owner-list-info">
+                            <div class="owner-list-name">Sunita Devi</div>
+                            <div class="owner-list-phone">Injured</div>
+                        </div>
+                        <div class="owner-list-meta">
+                            <div>Next Action: Mar 25, 2025</div>
+                            <div>Knee pain, advised rest</div>
+                            <div>Created: Mar 14, 2025</div>
+                        </div>
+                        <span class="badge badge-red">Scheduled</span>
+                    </div>
+                    <div class="owner-list-item">
+                        <div class="owner-list-info">
+                            <div class="owner-list-name">Manoj Bhai</div>
+                            <div class="owner-list-phone">Travelling</div>
+                        </div>
+                        <div class="owner-list-meta">
+                            <div>Next Action: Apr 01, 2025</div>
+                            <div>Out of town for work</div>
+                            <div>Created: Mar 13, 2025</div>
+                        </div>
+                        <span class="badge badge-blue">Scheduled</span>
+                    </div>
+                    <div class="owner-list-item">
+                        <div class="owner-list-info">
+                            <div class="owner-list-name">Kiran Bala</div>
+                            <div class="owner-list-phone">No Response</div>
+                        </div>
+                        <div class="owner-list-meta">
+                            <div>Next Action: -</div>
+                            <div>3 call attempts, no response</div>
+                            <div>Created: Mar 10, 2025</div>
+                        </div>
+                        <span class="badge badge-red">Pending</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- RESULT POPUP (ONLY SHOWS ON TRIGGER) -->
+    <div class="result-popup" id="result-popup">
+        <div class="result-card">
+            <div class="result-icon" id="result-icon">✅</div>
+            <div class="result-title" id="result-title">Check-In Successful</div>
+            <div class="result-message" id="result-message">Attendance recorded. Streak updated!</div>
+            <button class="result-btn" onclick="closePopup()">Got it</button>
+        </div>
+    </div>
+
+    <!-- BOTTOM NAV (Member) -->
+    <div class="bottom-nav" id="bottom-nav">
+        <a href="#" class="nav-tab active" onclick="showScreen('home')">
+            <span class="nav-icon">🏠</span>Home
+        </a>
+        <a href="#" class="nav-tab" onclick="showScreen('qr')">
+            <span class="nav-icon">📱</span>Check-In
+        </a>
+        <a href="#" class="nav-tab" onclick="showScreen('history')">
+            <span class="nav-icon">📊</span>History
+        </a>
+        <a href="#" class="nav-tab" onclick="showScreen('addons')">
+            <span class="nav-icon">🏋️</span>Add-Ons
+        </a>
+        <a href="#" class="nav-tab" onclick="showScreen('renewal')">
+            <span class="nav-icon">💳</span>Renewal
+        </a>
+        <a href="#" class="nav-tab" onclick="showScreen('settings')">
+            <span class="nav-icon">⚙️</span>Settings
+        </a>
+    </div>
+
+    <!-- BOTTOM NAV (Owner) -->
+    <div class="bottom-nav" id="owner-nav" style="display:none;">
+        <a href="#" class="nav-tab owner-active" onclick="showScreen('owner-dashboard')">
+            <span class="nav-icon">📊</span>Dashboard
+        </a>
+        <a href="#" class="nav-tab" onclick="showScreen('owner-redlist')">
+            <span class="nav-icon">🚩</span>Red List
+        </a>
+        <a href="#" class="nav-tab" onclick="showScreen('owner-followups')">
+            <span class="nav-icon">📞</span>Follow-Ups
+        </a>
+        <a href="#" class="nav-tab" onclick="showScreen('owner-addons')">
+            <span class="nav-icon">🏋️</span>Add-Ons
+        </a>
+        <a href="#" class="nav-tab" onclick="showScreen('owner-renewals')">
+            <span class="nav-icon">💳</span>Renewals
+        </a>
+        <a href="#" class="nav-tab" onclick="toggleOwnerMode()">
+            <span class="nav-icon">👤</span>Member
+        </a>
+    </div>
+
+    <script>
+        // Role selection
+        let selectedRole = 'member';
+        function selectRole(role, element) {
+            selectedRole = role;
+            document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        // Screen navigation
+        function showScreen(screen) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('screen-' + screen).classList.add('active');
+            closePopup();
+        }
+
+        // Toggle Member vs Owner mode
+        let isOwnerMode = false;
+        function toggleOwnerMode() {
+            isOwnerMode = !isOwnerMode;
+            const switchBtn = document.getElementById('ownerSwitchBtn');
+            const bottomNav = document.getElementById('bottom-nav');
+            const ownerNav = document.getElementById('owner-nav');
+
+            if (isOwnerMode) {
+                switchBtn.style.display = 'flex';
+                bottomNav.style.display = 'none';
+                ownerNav.style.display = 'flex';
+                showScreen('owner-dashboard');
+            } else {
+                switchBtn.style.display = 'none';
+                bottomNav.style.display = 'flex';
+                ownerNav.style.display = 'none';
+                showScreen('home');
+            }
+        }
+
+        // Login flows
+        function doMemberLogin() {
+            const phone = document.getElementById('member-phone').value;
+            const errorEl = document.getElementById('member-login-error');
+            if (!phone || phone.length !== 10) {
+                errorEl.style.display = 'block';
+                return;
+            }
+            errorEl.style.display = 'none';
+            document.getElementById('ownerSwitchBtn').style.display = 'flex';
+            showScreen('home');
+        }
+
+        function doOwnerLogin() {
+            const staffId = document.getElementById('owner-staff-id').value;
+            const password = document.getElementById('owner-password').value;
+            const errorEl = document.getElementById('owner-login-error');
+            if (!staffId || !password) {
+                errorEl.style.display = 'block';
+                return;
+            }
+            errorEl.style.display = 'none';
+            toggleOwnerMode();
+        }
+
+        // DaysCounter animation
+        function animateCounter(elementId, newValue) {
+            const el = document.getElementById(elementId);
+            const oldValue = parseInt(el.textContent) || 0;
+            const diff = newValue - oldValue;
+            const duration = 400;
+            const start = performance.now();
+
+            function step(now) {
+                const progress = Math.min((now - start) / duration, 1);
+                const eased = 0.34 * Math.pow(progress, 3) + 1.56 * Math.pow(progress, 2) + 0.64 * progress;
+                el.textContent = Math.round(oldValue + diff * eased);
+                if (progress < 1) requestAnimationFrame(step);
+            }
+            requestAnimationFrame(step);
+        }
+
+        window.addEventListener('load', () => {
+            animateCounter('days-left', 5);
+            animateCounter('streak-count', 23);
+        });
+
+        // Toggle switch
+        function toggleSwitch(id) {
+            const el = document.getElementById('toggle-' + id);
+            el.classList.toggle('active');
+        }
+
+        // QR Check-In — only triggers on button click
+        let isScanning = true;
+        const scanToggle = document.getElementById('scan-toggle');
+
+        function generateQR() {
+            return 'GYM-' + Math.floor(Math.random() * 9000 + 1000) + '-' + Math.floor(Math.random() * 900 + 100);
+        }
+
+        function simulateScan() {
+            if (!isScanning) return;
+            const qr = generateQR();
+            document.getElementById('qr-display').textContent = qr;
+
+            const roll = Math.random();
+            let type;
+            if (roll < 0.6) type = 'success';
+            else if (roll < 0.75) type = 'duplicate';
+            else if (roll < 0.85) type = 'invalid';
+            else if (roll < 0.92) type = 'expired';
+            else type = 'offline';
+
+            const configs = {
+                success: { icon: '✅', title: 'Check-In Successful', msg: 'Attendance recorded. Streak updated!', color: '#10b981' },
+                duplicate: { icon: '⚠️', title: 'Duplicate Scan', msg: 'Already checked in within 10 minutes.', color: '#f59e0b' },
+                invalid: { icon: '❌', title: 'Invalid QR', msg: 'Please scan a valid session-bound QR.', color: '#ef4444' },
+                expired: { icon: '⏰', title: 'Membership Expired', msg: 'Membership expired. Please renew first.', color: '#fbbf24' },
+                offline: { icon: '📴', title: 'Offline Mode', msg: 'Offline. Will sync when back online.', color: '#6b7280' }
+            };
+
+            const c = configs[type];
+            document.getElementById('result-icon').textContent = c.icon;
+            document.getElementById('result-title').textContent = c.title;
+            document.getElementById('result-message').textContent = c.msg;
+            document.getElementById('result-icon').style.color = c.color;
+
+            isScanning = false;
+            scanToggle.textContent = '▶️';
+            openPopup();
+
+            setTimeout(() => {
+                closePopup();
+                setTimeout(() => {
+                    isScanning = true;
+                    scanToggle.textContent = '⏹';
+                }, 1000);
+            }, 4000);
+        }
+
+        scanToggle.addEventListener('click', () => {
+            isScanning = !isScanning;
+            scanToggle.textContent = isScanning ? '⏹' : '▶️';
+            if (isScanning) simulateScan();
+        });
+
+        function verifyManual() {
+            const input = document.getElementById('manual-qr').value;
+            if (!input) return;
+            document.getElementById('qr-display').textContent = input;
+            const c = { icon: '✅', title: 'Check-In Successful', msg: 'Attendance recorded via manual entry.', color: '#10b981' };
+            document.getElementById('result-icon').textContent = c.icon;
+            document.getElementById('result-title').textContent = c.title;
+            document.getElementById('result-message').textContent = c.msg;
+            document.getElementById('result-icon').style.color = c.color;
+            openPopup();
+            document.getElementById('manual-qr').value = '';
+        }
+
+        function openPopup() {
+            document.getElementById('result-popup').style.display = 'flex';
+        }
+
+        function closePopup() {
+            document.getElementById('result-popup').style.display = 'none';
+        }
+
+        // Plan selection
+        let selectedPlanIndex = 1;
+        const plans = [
+            { label: '3 Months', price: '3,999', discount: 0 },
+            { label: '6 Months', price: '6,999', discount: 500 },
+            { label: '12 Months', price: '12,499', discount: 1500 }
+        ];
+
+        function selectPlan(idx) {
+            selectedPlanIndex = idx;
+            const cards = document.querySelectorAll('.plan-card');
+            cards.forEach((card, i) => {
+                card.classList.toggle('selected', i === idx);
+            });
+            updatePricing();
+        }
+
+        function updatePricing() {
+            const p = plans[selectedPlanIndex];
+            document.getElementById('base-price').textContent = '₹' + p.price;
+            document.getElementById('discount-val').textContent = '-₹' + p.discount;
+            const final = parseInt(p.price.replace(',', '')) - p.discount;
+            document.getElementById('final-amt').textContent = '₹' + final.toLocaleString();
+            document.getElementById('pay-btn').textContent = 'Pay ₹' + final.toLocaleString();
+        }
+
+        // Payment simulation — only on button click
+        let paymentProcessing = false;
+        const payBtn = document.getElementById('pay-btn');
+        const paymentState = document.getElementById('payment-state');
+        const paymentStateText = document.getElementById('payment-state-text');
+        const stateDot = document.getElementById('state-dot');
+
+        function processPayment() {
+            if (paymentProcessing) return;
+            paymentProcessing = true;
+            payBtn.disabled = true;
+            payBtn.innerHTML = '<span class="loading-spinner"></span> Processing…';
+
+            paymentState.style.display = 'flex';
+            paymentState.className = 'payment-state pending';
+            stateDot.className = 'state-dot pending';
+            paymentStateText.textContent = 'Processing…';
+
+            setTimeout(() => {
+                const success = Math.random() < 0.8;
+                if (success) {
+                    paymentState.className = 'payment-state';
+                    stateDot.className = 'state-dot';
+                    paymentStateText.textContent = 'Payment Verified • Receipt: RCPT-' + Math.floor(Math.random() * 90000 + 10000);
+                    payBtn.innerHTML = 'Payment Verified';
+                    payBtn.className = 'btn btn-secondary';
+                    payBtn.disabled = true;
+
+                    setTimeout(() => {
+                        animateCounter('streak-count', 24);
+                        const dot = document.getElementById('streak-dot');
+                        dot.classList.add('pulse');
+                        setTimeout(() => dot.classList.remove('pulse'), 600);
+                    }, 500);
+                } else {
+                    paymentState.className = 'payment-state failed';
+                    stateDot.className = 'state-dot failed';
+                    paymentStateText.textContent = 'Payment Failed • Membership not extended';
+                    payBtn.innerHTML = 'Try Again';
+                    payBtn.className = 'btn btn-primary';
+                    payBtn.disabled = false;
+                    paymentProcessing = false;
+                }
+            }, 3000);
+        }
+    </script>
+
+</body>
+</html>

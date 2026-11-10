@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitLocal Gym — Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --gym-black: #000000;
+            --gym-dark: #0a0a0a;
+            --gym-card: #111111;
+            --gym-green: #10b981;
+            --gym-green-hover: #34d399;
+            --gym-yellow: #fbbf24;
+            --gym-red: #ef4444;
+            --gym-blue: #3b82f6;
+            --gym-orange: #f59e0b;
+            --gym-purple: #8b5cf6;
+            --gym-gray: #6b7280;
+            --gym-text-muted: rgba(255, 255, 255, 0.5);
+            --gym-text-light: rgba(255, 255, 255, 0.7);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--gym-black);
+            color: #ffffff;
+            overflow: hidden;
+        }
+
+        /* ============ LAYOUT ============ */
+        .app-layout {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--gym-dark);
+            border-right: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 20px 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-logo-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--gym-green);
+            border-radius: 50%;
+        }
+
+        .sidebar-logo-text {
+            font-size: 18px;
+            font-weight: 900;
+            color: #fff;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 20px 0;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 24px;
+            color: var(--gym-text-light);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            border-left: 4px solid transparent;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+        }
+
+        .nav-item.active {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--gym-green);
+            border-left: 4px solid var(--gym-green);
+        }
+
+        .nav-item .icon {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            padding: 20px 24px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .user-card {
+            background: rgba(255,255,255,0.04);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: var(--gym-text-muted);
+        }
+
+        .btn-logout {
+            width: 100%;
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--gym-red);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            background: var(--gym-black);
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 32px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            background: var(--gym-dark);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 900;
+            color: #fff;
+            letter-spacing: -0.5px;
+        }
+
+        .page-subtitle {
+            font-size: 13px;
+            color: var(--gym-text-muted);
+            margin-top: 4px;
+        }
+
+        .top-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .search-box {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 10px 16px;
+            color: #fff;
+            font-size: 13px;
+            width: 240px;
+        }
+
+        .search-box::placeholder {
+            color: var(--gym-text-muted);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.05);
+            padding: 8px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: var(--gym-green);
+            color: #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 14px;
+        }
+
+        /* Page Container */
+        .page-container {
+            padding: 32px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* ============ STATS CARDS ============ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--gym-card);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .stat-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--gym-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-icon {
+            font-size: 20px;
+            width: 32px;
+            height: 32px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .stat-change {
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stat-change.up { color: var(--gym-green); }
+        .stat-change.down { color: var(--gym-red); }
+        .stat-change.neutral { color: var(--gym-gray); }
+
+        /* ============ SECTION HEADERS ============ */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .section-subtitle {
+            font-size: 13px;
+            color: var(--gym-text-muted);
+            margin-top: 4px;
+        }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--gym-green);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            background: var(--gym-green-hover);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.06);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.12);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            margin-right: 6px;
+        }
+
+        .btn-sm-green { background: var(--gym-green); color: #000; }
+        .btn-sm-blue { background: var(--gym-blue); color: #fff; }
+        .btn-sm-red { background: var(--gym-red); color: #fff; }
+        .btn-sm-yellow { background: var(--gym-yellow); color: #000; }
+        .btn-sm-purple { background: var(--gym-purple); color: #fff; }
+
+        .btn-sm:hover {
+            opacity: 0.9;
+            transform: scale(0.98);
+        }
+
+        /* ============ TABLES ============ */
+        .table-container {
+            background: var(--gym-card);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 32px;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th {
+            background: rgba(255,255,255,0.05);
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--gym-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 13px;
+            vertical-align: middle;
+        }
+
+        .table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table tr:hover {
+            background: rgba(255,255,255,0.03);
+        }
+
+        /* Badges in tables */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .badge-green { background: rgba(16, 185, 129, 0.2); color: var(--gym-green); }
+        .badge-yellow { background: rgba(251, 191, 36, 0.2); color: var(--gym-yellow); }
+        .badge-red { background: rgba(239, 68, 68, 0.2); color: var(--gym-red); }
+        .badge-blue { background: rgba(59, 130, 246, 0.2); color: var(--gym-blue); }
+        .badge-purple { background: rgba(139, 92, 246, 0.2); color: var(--gym-purple); }
+        .badge-gray { background: rgba(107, 114, 128, 0.2); color: var(--gym-gray); }
+
+        .status-paid { color: var(--gym-green); font-weight: 800; }
+        .status-pending { color: var(--gym-yellow); font-weight: 800; }
+        .status-failed { color: var(--gym-red); font-weight: 800; }
+
+        /* ============ MODALS ============ */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal {
+            background: var(--gym-card);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 24px;
+            width: 100%;
+            max-width: 500px;
+            color: #fff;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 900;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--gym-text-muted);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .modal-close:hover {
+            color: #fff;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--gym-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-input {
+            width: 100%;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--gym-green);
+        }
+
+        .form-select {
+            width: 100%;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        /* ============ EMPTY STATE ============ */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gym-text-muted);
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+            display: block;
+        }
+
+        /* ============ UTILS ============ */
+        .rupee { font-variant-numeric: tabular-nums; }
+        .text-green { color: var(--gym-green); }
+        .text-red { color: var(--gym-red); }
+        .text-yellow { color: var(--gym-yellow); }
+        .text-blue { color: var(--gym-blue); }
+        .text-gray { color: var(--gym-gray); }
+
+        .danger-zone {
+            background: rgba(239, 68, 68, 0.05);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 24px;
+        }
+
+        .danger-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--gym-red);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .app-layout {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+            }
+            .sidebar-nav {
+                display: flex;
+                gap: 4px;
+                padding: 10px;
+                overflow-x: auto;
+            }
+            .nav-item {
+                padding: 10px 16px;
+                font-size: 12px;
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+            .main-content {
+                height: calc(100vh - 56px);
+            }
+            .top-bar {
+                flex-direction: column;
+                gap: 16px;
+                align-items: stretch;
+            }
+            .search-box {
+                width: 100%;
+            }
+            .page-container {
+                padding: 20px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-dot"></div>
+            <div class="sidebar-logo-text">FitLocal Gym</div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-item active" onclick="navigate('dashboard', this)">
+                <span class="icon">📊</span> Dashboard
+            </div>
+            <div class="nav-item" onclick="navigate('members', this)">
+                <span class="icon">👥</span> Members
+            </div>
+            <div class="nav-item" onclick="navigate('attendance', this)">
+                <span class="icon">📱</span> Attendance
+            </div>
+            <div class="nav-item" onclick="navigate('payments', this)">
+                <span class="icon">💳</span> Payments
+            </div>
+            <div class="nav-item" onclick="navigate('addons', this)">
+                <span class="icon">🏋️</span> Add-Ons
+            </div>
+            <div class="nav-item" onclick="navigate('redlist', this)">
+                <span class="icon">🚩</span> Red List
+            </div>
+            <div class="nav-item" onclick="navigate('followups', this)">
+                <span class="icon">📞</span> Follow-Ups
+            </div>
+            <div class="nav-item" onclick="navigate('plans', this)">
+                <span class="icon">📋</span> Plans
+            </div>
+            <div class="nav-item" onclick="navigate('settings', this)">
+                <span class="icon">⚙️</span> Settings
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-name">Suresh Rao</div>
+                <div class="user-role">Owner • FitLocal Gym</div>
+            </div>
+            <button class="btn-logout" onclick="alert('Logged out')">Logout</button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="top-bar">
+            <div>
+                <div class="page-title" id="page-title">Dashboard</div>
+                <div class="page-subtitle" id="page-subtitle">Welcome back. Here's what's happening at your gym today.</div>
+            </div>
+            <div class="top-right">
+                <input type="text" class="search-box" placeholder="Search members, plans...">
+                <div class="user-profile" onclick="alert('Profile')">
+                    <div class="user-avatar">SR</div>
+                    <div>
+                        <div style="font-size:13px; font-weight:700; color:#fff;">Suresh Rao</div>
+                        <div style="font-size:11px; color:var(--gym-text-muted);">Owner</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="page-container">
+            
+            <!-- DASHBOARD PAGE -->
+            <section id="page-dashboard" class="page-section" style="display:block;">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Active Members</span>
+                            <span class="stat-icon">👥</span>
+                        </div>
+                        <div class="stat-value">1,234</div>
+                        <div class="stat-change up">↑ 12 vs last week</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Today's Check-Ins</span>
+                            <span class="stat-icon">✅</span>
+                        </div>
+                        <div class="stat-value">89</div>
+                        <div class="stat-change up">↑ 5 vs last week</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">7-Day Active</span>
+                            <span class="stat-icon">📅</span>
+                        </div>
+                        <div class="stat-value">456</div>
+                        <div class="stat-change down">↓ 2 vs last week</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">No-Show Cases</span>
+                            <span class="stat-icon">⚠️</span>
+                        </div>
+                        <div class="stat-value">23</div>
+                        <div class="stat-change up">↑ 8 vs last week</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Renewals Due</span>
+                            <span class="stat-icon">💳</span>
+                        </div>
+                        <div class="stat-value">14</div>
+                        <div class="stat-change up">↑ 3 vs last week</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Add-On Revenue</span>
+                            <span class="stat-icon">💰</span>
+                        </div>
+                        <div class="stat-value">₹45,000</div>
+                        <div class="stat-change up">↑ 12% vs last week</div>
+                    </div>
+                </div>
+
+                <div class="section-header">
+                    <h2 class="section-title">🚩 Red List — Needs Follow-Up</h2>
+                    <button class="btn btn-secondary" onclick="navigate('redlist')">View All →</button>
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Member</th>
+                                <th>Phone</th>
+                                <th>Plan</th>
+                                <th>Expiry</th>
+                                <th>Last Check-In</th>
+                                <th>Absent Days</th>
+                                <th>Trainer</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div style="display:flex; align-items:center; gap:8px;">
+                                        <div style="width:32px; height:32px; background:rgba(245,158,11,0.2); border-radius:16px; display:flex; align-items:center; justify-content:center; font-weight:800; color:var(--gym-orange); font-size:12px;">R</div>
+                                        <div>
+                                            <div style="font-weight:700; color:#fff;">Rajesh Kumar</div>
+                                            <div style="font-size:11px; color:var(--gym-text-muted);">ID: MEM-001</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="color:var(--gym-text-light); font-size:13px;">+91 98765 43210</td>
+                                <td style="color:#fff; font-size:13px;">Monthly</td>
+                                <td style="color:var(--gym-yellow); font-weight:700; font-size:13px;">Mar 15, 2025</td>
+                                <td style="color:var(--gym-text-muted); font-size:13px;">Feb 28, 2025</td>
+                                <td style="color:var(--gym-orange); font-weight:800; font-size:13px;">14 days</td>
+                                <td style="color:var(--gym-text-muted); font-size:13px;">Arjun Patel</td>
+                                <td>
+                                    <div style="display:flex; gap:4px;">
+                                        <button class="btn-sm btn-sm-green">Call</button>
+                                        <button class="btn-sm btn-sm-blue">WhatsApp</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div style="display:flex; align-items:center; gap:8px;">
+                                        <div style="width:32px; height:32px; background:rgba(245,158,11,0.2); border-radius:16px; display:flex; align-items:center; justify-content:center; font-weight:800; color:var(--gym-orange); font-size:12px;">S</div>
+                                        <div>
+                                            <div style="font-weight:700; color:#fff;">Sunita Devi</div>
+                                            <div style="font-size:11px; color:var(--gym-text-muted);">ID: MEM-002</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="color:var(--gym-text-light); font-size:13px;">+91 98765 43211</td>
+                                <td style="color:#fff; font-size:13px;">Quarterly</td>
+                                <td style="color:var(--gym-yellow); font-weight:700; font-size:13px;">Mar 18, 2025</td>
+                                <td style="color:var(--gym-text-muted); font-size:13px;">Mar 01, 2025</td>
+                                <td style="color:var(--gym-orange); font-weight:800; font-size:13px;">11 days</td>
+                                <td style="color:var(--gym-text-muted); font-size:13px;">Neha Sharma</td>
+                                <td>
+                                    <div style="display:flex; gap:4px;">
+                                        <button class="btn-sm btn-sm-green">Call</button>
+                                        <button class="btn-sm btn-sm-blue">WhatsApp</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div style="display:flex; align-items:center; gap:8px;">
+                                        <div style="width:32px; height:32px; background:rgba(245,158,11,0.2); border-radius:16px; display:flex; align-items:center; justify-content:center; font-weight:800; color:var(--gym-orange); font-size:12px;">M</div>
+                                        <div>
+                                            <div style="font-weight:700; color:#fff;">Manoj Bhai</div>
+                                            <div style="font-size:11px; color:var(--gym-text-muted);">ID: MEM-003</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="color:var(--gym-text-light); font-size:13px;">+91 98765 43212</td>
+                                <td style="color:#fff; font-size:13px;">Half-Yearly</td>
+                                <td style="color:var(--gym-yellow); font-weight:700; font-size:13px;">Mar 20, 2025</td>
+                                <td style="color:var(--gym-text-muted); font-size:13px;">Mar 05, 2025</td>
+                                <td style="color:var(--gym-orange); font-weight:800; font-size:13px;">18 days</td>
+                                <td style="color:var(--gym-text-muted); font-size:13px;">Ravi Kumar</td>
+                                <td>
+                                    <div style="display:flex; gap:4px;">
+                                        <button class="btn-sm btn-sm-green">Call</button>
+                                        <button class="btn-sm btn-sm-blue">WhatsApp</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- MEMBERS PAGE -->
+            <section id="page-members" class="page-section" style="display:none;">
+                <div class="section-header">
+                    <div>
+                        <h2 class="section-title">👥 Members</h2>
+                        <div class="section-subtitle">Manage member profiles, memberships, and communication preferences</div>
+                    </div>
+                    <button class="btn btn-primary" onclick="openModal('memberModal')">+ Add Member</button>
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Member</th>
+                                <th>Phone</th>
+                                <th>Plan</th>
+                                <th>Expiry</th>
+                                <th>Streak</th>
+                                <th>Status</th>
+                                <th>Opt-In</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="members-table-body">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ATTENDANCE PAGE -->
+            <section id="page-attendance" class="page-section" style="display:none;">
+                <div class="section-header">
+                    <div>
+                        <h2 class="section-title">📱 Attendance</h2>
+                        <div class="section-subtitle">View and manage all check-in records</div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Member</th>
+                                <th>Check-In Time</th>
+                                <th>Source</th>
+                                <th>QR Session</th>
+                                <th>Synced</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendance-table-body">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- PAYMENTS PAGE -->
+            <section id="page-payments" class="page-section" style="display:none;">
+                <div class="section-header">
+                    <div>
+                        <h2 class="section-title">💳 Payments</h2>
+                        <div class="section-subtitle">Verify payments, issue receipts, handle refunds</div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Member</th>
+                                <th>Order ID</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Provider</th>
+                                <th>Paid At</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="payments-table-body">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ADD-ONS PAGE -->
+            <section id="page-addons" class="page-section" style="display:none;">
+                <div class="section-header">
+                    <div>
+                        <h2 class="section-title">🏋️ Add-On Marketplace</h2>
+                        <div class="section-subtitle">Manage PT, diet plans, and supplement stock</div>
+                    </div>
+                    <button class="btn btn-primary" onclick="openModal('addonModal')">+ Add Add-On</button>
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Add-On</th>
+                                <th>Type</th>
+                                <th>Price</th>
+                                <th>Validity</th>
+                                <th>Stock</th>
+                                <th>Trainer</th>
+                                <th>Available</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="addons-table-body">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- RED LIST PAGE -->
+            <section id="page-redlist" class="page-section" style="display:none;">
+                <div class="section-header">
+                    <div>
+                        <h2 class="section-title">🚩 Red List</h2>
+                        <div class="section-subtitle">Members absent ≥ threshold days with active membership</div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Member</th>
+                                <th>Phone</th>
+                                <th>Plan</th>
+                                <th>Absent Days</th>
+                                <th>Trainer</th>
+                                <th>Last Follow-Up</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="redlist-table-body">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- FOLLOW-UPS PAGE -->
+            <section id="page-followups" class="page-section" style="display:none;">
+                <div class="section-header">
+                    <div>
+                        <h2 class="section-title">📞 Follow-Ups</h2>
+                        <div class="section-subtitle">Track outcomes and next action dates</div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Member</th>
+                                <th>Outcome</th>
+                                <th>Next Action Date</th>
+                                <th>Notes</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="followups-table-body">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- PLANS PAGE -->
+            <section id="page-plans" class="page-section" style="display:none;">
+                <div class="section-header">
+                    <div>
+                        <h2 class="section-title">📋 Membership Plans</h2>
+                        <div class="section-subtitle">Configure plans, prices, and benefits</div>
+                    </div>
+                    <button class="btn btn-primary" onclick="openModal('planModal')">+ Add Plan</button>
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Plan Name</th>
+                                <th>Type</th>
+                                <th>Base Price</th>
+                                <th>Duration</th>
+                                <th>Benefits</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="plans-table-body">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- SETTINGS PAGE -->
+            <section id="page-settings" class="page-section" style="display:none;">
+                <div class="section-header">
+                    <div>
+                        <h2 class="section-title">⚙️ Settings</h2>
+                        <div class="section-subtitle">Configure automation thresholds and reminders</div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-bottom:32px;">
+                    <div class="section-title">📊 Automation Thresholds</div>
+                    <div style="margin-bottom:16px;">
+                        <div class="form-label">No-Show Threshold (Days)</div>
+                        <input type="number" class="form-input" value="10" id="setting-noShow">
+                        <div style="font-size:11px; color:var(--gym-text-muted); margin-top:4px;">Open a no-show case when a member is absent for this many days</div>
+                    </div>
+                    <div style="margin-bottom:16px;">
+                        <div class="form-label">Renewal Reminder Windows (Days)</div>
+                        <input type="text" class="form-input" value="14, 7, 3, 0" id="setting-renewal">
+                        <div style="font-size:11px; color:var(--gym-text-muted); margin-top:4px;">Comma-separated days before expiry to send reminders</div>
+                    </div>
+                    <div style="margin-bottom:16px;">
+                        <div class="form-label">Duplicate Scan Window (Minutes)</div>
+                        <input type="number" class="form-input" value="10" id="setting-dupScan">
+                        <div style="font-size:11px; color:var(--gym-text-muted); margin-top:4px;">Prevent duplicate QR scans within this window</div>
+                    </div>
+                    <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+                </div>
+
+                <div class="card" style="margin-bottom:32px;">
+                    <div class="section-title">📧 Notification Channels</div>
+                    <div style="margin-bottom:16px;">
+                        <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                            <input type="checkbox" checked style="accent-color:var(--gym-green);">
+                            <span>Push Notifications</span>
+                        </label>
+                    </div>
+                    <div style="margin-bottom:16px;">
+                        <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                            <input type="checkbox" checked style="accent-color:var(--gym-green);">
+                            <span>SMS Alerts</span>
+                        </label>
+                    </div>
+                    <div style="margin-bottom:16px;">
+                        <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                            <input type="checkbox" style="accent-color:var(--gym-green);">
+                            <span>Email Updates</span>
+                        </label>
+                    </div>
+                    <div style="margin-bottom:16px;">
+                        <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                            <input type="checkbox" style="accent-color:var(--gym-green);">
+                            <span>WhatsApp Messages</span>
+                        </label>
+                    </div>
+                    <button class="btn btn-primary" onclick="saveSettings()">Save Notification Settings</button>
+                </div>
+
+                <div class="danger-zone">
+                    <div class="danger-title">🗑️ Danger Zone</div>
+                    <button class="btn-sm btn-sm-red" style="margin-bottom:8px;" onclick="if(confirm('Reset all sample data?')){alert('Data reset simulated')">Reset Sample Data</button>
+                    <button class="btn-sm btn-sm-red" onclick="if(confirm('Export audit log?')){alert('Audit log export simulated')">Export Audit Log</button>
+                </div>
+            </section>
+
+        </div>
+    </main>
+</div>
+
+<!-- MEMBER MODAL -->
+<div class="modal-overlay" id="memberModal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title">Add Member</div>
+            <button class="modal-close" onclick="closeModal('memberModal')">×</button>
+        </div>
+        <div class="form-group">
+            <div class="form-label">Full Name</div>
+            <input type="text" class="form-input" placeholder="e.g. Rajesh Kumar">
+        </div>
+        <div class="form-group">
+            <div class="form-label">Mobile Number</div>
+            <input type="tel" class="form-input" placeholder="+91 98765 43210">
+        </div>
+        <div class="form-group">
+            <div class="form-label">Email</div>
+            <input type="email" class="form-input" placeholder="rajesh@example.com">
+        </div>
+        <div class="form-group">
+            <div class="form-label">Plan</div>
+            <select class="form-select">
+                <option>Gym Unlimited (Monthly)</option>
+                <option>Fitness Pro (Quarterly)</option>
+                <option>Strength+ (Half-Yearly)</option>
+                <option>Elite Year (Yearly)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <div class="form-label">Expiry Date</div>
+            <input type="date" class="form-input">
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeModal('memberModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="closeModal('memberModal'); alert('Member added successfully')">Save Member</button>
+        </div>
+    </div>
+</div>
+
+<!-- ADD-ON MODAL -->
+<div class="modal-overlay" id="addonModal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title">Add Add-On</div>
+            <button class="modal-close" onclick="closeModal('addonModal')">×</button>
+        </div>
+        <div class="form-group">
+            <div class="form-label">Add-On Name</div>
+            <input type="text" class="form-input" placeholder="e.g. Personal Training - 8 Sessions">
+        </div>
+        <div class="form-group">
+            <div class="form-label">Type</div>
+            <select class="form-select">
+                <option>Personal Training</option>
+                <option>Diet Plan</option>
+                <option>Supplement</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <div class="form-label">Price (₹)</div>
+            <input type="number" class="form-input" placeholder="e.g. 4999">
+        </div>
+        <div class="form-group">
+            <div class="form-label">Validity (Days)</div>
+            <input type="number" class="form-input" placeholder="e.g. 30">
+        </div>
+        <div class="form-group">
+            <div class="form-label">Stock</div>
+            <input type="number" class="form-input" placeholder="Leave blank for unlimited">
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeModal('addonModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="closeModal('addonModal'); alert('Add-On added successfully')">Save Add-On</button>
+        </div>
+    </div>
+</div>
+
+<!-- PLAN MODAL -->
+<div class="modal-overlay" id="planModal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title">Add Plan</div>
+            <button class="modal-close" onclick="closeModal('planModal')">×</button>
+        </div>
+        <div class="form-group">
+            <div class="form-label">Plan Name</div>
+            <input type="text" class="form-input" placeholder="e.g. Gym Unlimited">
+        </div>
+        <div class="form-group">
+            <div class="form-label">Type</div>
+            <select class="form-select">
+                <option>Monthly</option>
+                <option>Quarterly</option>
+                <option>Half-Yearly</option>
+                <option>Yearly</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <div class="form-label">Base Price (₹)</div>
+            <input type="number" class="form-input" placeholder="e.g. 1499">
+        </div>
+        <div class="form-group">
+            <div class="form-label">Duration (Days)</div>
+            <input type="number" class="form-input" placeholder="e.g. 30">
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeModal('planModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="closeModal('planModal'); alert('Plan added successfully')">Save Plan</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Navigation
+    function navigate(page, element) {
+        // Hide all pages
+        document.querySelectorAll('.page-section').forEach(p => p.style.display = 'none');
+        
+        // Show selected page
+        document.getElementById('page-' + page).style.display = 'block';
+        
+        // Update sidebar
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        if (element) element.classList.add('active');
+        
+        // Update page title
+        const titles = {
+            'dashboard': 'Dashboard',
+            'members': 'Members',
+            'attendance': 'Attendance',
+            'payments': 'Payments',
+            'addons': 'Add-Ons',
+            'redlist': 'Red List',
+            'followups': 'Follow-Ups',
+            'plans': 'Plans',
+            'settings': 'Settings'
+        };
+        document.getElementById('page-title').textContent = titles[page] || 'Dashboard';
+    }
+
+    // Modal controls
+    function openModal(modalId) {
+        document.getElementById(modalId).style.display = 'flex';
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+    // Close modal when clicking outside
+    window.addEventListener('click', (e) => {
+        if (e.target.classList.contains('modal-overlay')) {
+            e.target.style.display = 'none';
+        }
+    });
+
+    // Save settings
+    function saveSettings() {
+        const noShow = document.getElementById('setting-noShow').value;
+        const renewal = document.getElementById('setting-renewal').value;
+        const dupScan = document.getElementById('setting-dupScan').value;
+        alert(`Settings saved:\nNo-Show Threshold: ${noShow} days\nRenewal Reminders: ${renewal} days\nDuplicate Scan Window: ${dupScan} minutes`);
+    }
+
+    // Sample data for tables
+    const membersData = [
+        { name: 'Rajesh Kumar', phone: '+91 98765 43210', plan: 'Monthly', expiry: 'Mar 15, 2025', streak: 23, status: 'Active', optIn: true },
+        { name: 'Sunita Devi', phone: '+91 98765 43211', plan: 'Quarterly', expiry: 'Mar 18, 2025', streak: 8, status: 'Active', optIn: false },
+        { name: 'Manoj Bhai', phone: '+91 98765 43212', plan: 'Half-Yearly', expiry: 'Mar 20, 2025', streak: 0, status: 'Paused', optIn: true },
+        { name: 'Pooja Agarwal', phone: '+91 98765 43213', plan: 'Monthly', expiry: 'Feb 20, 2025', streak: 5, status: 'Expired', optIn: true },
+        { name: 'Rahul Sharma', phone: '+91 98765 43214', plan: 'Yearly', expiry: 'Dec 10, 2025', streak: 45, status: 'Active', optIn: false },
+    ];
+
+    const attendanceData = [
+        { member: 'Rajesh Kumar', time: '07:15 AM', date: 'Mar 10, 2025', source: 'QR', session: 'GYM-4829-194', synced: true },
+        { member: 'Sunita Devi', time: '06:45 AM', date: 'Mar 09, 2025', source: 'QR', session: 'GYM-1034-567', synced: true },
+        { member: 'Manoj Bhai', time: '07:30 AM', date: 'Mar 08, 2025', source: 'Assisted', session: 'GYM-9921-334', synced: false },
+        { member: 'Rahul Sharma', time: '08:00 AM', date: 'Mar 10, 2025', source: 'QR', session: 'GYM-7761-002', synced: true },
+    ];
+
+    const paymentsData = [
+        { member: 'Rajesh Kumar', order: 'ORD-174201-abc123', amount: '₹6,499', status: 'paid', provider: 'Simulated', paidAt: 'Mar 10, 2025' },
+        { member: 'Sunita Devi', order: 'ORD-174199-def456', amount: '₹3,999', status: 'pending', provider: 'Simulated', paidAt: '-' },
+        { member: 'Manoj Bhai', order: 'ORD-174198-ghi789', amount: '₹6,999', status: 'failed', provider: 'Simulated', paidAt: '-' },
+        { member: 'Pooja Agarwal', order: 'ORD-174197-jkl012', amount: '₹12,499', status: 'paid', provider: 'Simulated', paidAt: 'Feb 20, 2025' },
+    ];
+
+    const addonsData = [
+        { name: 'Personal Training - 8 Sessions', type: 'Personal Training', price: '₹4,999', validity: '30 days', stock: 'Unlimited', trainer: 'Arjun Patel', available: true },
+        { name: 'Custom Diet Plan', type: 'Diet Plan', price: '₹2,499', validity: '30 days', stock: 'Unlimited', trainer: 'Neha Sharma', available: true },
+        { name: 'Whey Protein 1kg', type: 'Supplement', price: '₹2,999', validity: '60 days', stock: '12 Left', trainer: '-', available: true },
+        { name: 'Pre-Workout 30 Servings', type: 'Supplement', price: '₹1,499', validity: '90 days', stock: '3 Left', trainer: '-', available: false },
+    ];
+
+    const redlistData = [
+        { name: 'Rajesh Kumar', phone: '+91 98765 43210', plan: 'Monthly', absent: 14, trainer: 'Arjun Patel', followUp: 'Mar 20, 2025' },
+        { name: 'Sunita Devi', phone: '+91 98765 43211', plan: 'Quarterly', absent: 11, trainer: 'Neha Sharma', followUp: '-' },
+        { name: 'Manoj Bhai', phone: '+91 98765 43212', plan: 'Half-Yearly', absent: 18, trainer: 'Ravi Kumar', followUp: 'Mar 25, 2025' },
+    ];
+
+    const followupsData = [
+        { member: 'Rajesh Kumar', outcome: 'Will Return', nextAction: 'Mar 20, 2025', notes: 'Spoke to member, will return next week', created: 'Mar 15, 2025' },
+        { member: 'Sunita Devi', outcome: 'Injured', nextAction: 'Mar 25, 2025', notes: 'Knee pain, advised rest', created: 'Mar 14, 2025' },
+        { member: 'Kiran Bala', outcome: 'No Response', nextAction: '-', notes: '3 call attempts, no response', created: 'Mar 10, 2025' },
+    ];
+
+    const plansData = [
+        { name: 'Gym Unlimited', type: 'Monthly', price: '₹1,499', duration: '30 days', benefits: 'Gym access, 1 guest pass/month' },
+        { name: 'Fitness Pro', type: 'Quarterly', price: '₹3,999', duration: '90 days', benefits: 'Gym access, 2 guest passes, 1 free PT session' },
+        { name: 'Strength+', type: 'Half-Yearly', price: '₹6,999', duration: '180 days', benefits: 'Gym access, 3 guest passes, 2 free PT sessions' },
+        { name: 'Elite Year', type: 'Yearly', price: '₹12,499', duration: '365 days', benefits: 'Gym access, 4 guest passes, 3 free PT, free diet plan' },
+    ];
+
+    // Populate tables on load
+    window.addEventListener('DOMContentLoaded', () => {
+        // Members
+        const mBody = document.getElementById('members-table-body');
+        membersData.forEach((m, i) => {
+            const statusColor = m.status === 'Active' ? 'badge-green' : m.status === 'Expired' ? 'badge-red' : 'badge-yellow';
+            const optColor = m.optIn ? 'badge-green' : 'badge-gray';
+            mBody.innerHTML += `
+                <tr>
+                    <td>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <div style="width:32px; height:32px; background:rgba(16,185,129,0.2); border-radius:16px; display:flex; align-items:center; justify-content:center; font-weight:800; color:var(--gym-green); font-size:12px;">${m.name.charAt(0)}</div>
+                            <div>
+                                <div style="font-weight:700; color:#fff;">${m.name}</div>
+                                <div style="font-size:11px; color:var(--gym-text-muted);">ID: MEM-${String(i+1).padStart(3,'0')}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="color:var(--gym-text-light); font-size:13px;">${m.phone}</td>
+                    <td style="color:#fff; font-size:13px;">${m.plan}</td>
+                    <td style="color:var(--gym-text-muted); font-size:13px;">${m.expiry}</td>
+                    <td style="color:#fff; font-weight:800; font-size:13px;">${m.streak}</td>
+                    <td><span class="badge ${statusColor}">${m.status}</span></td>
+                    <td><span class="badge ${optColor}">${m.optIn ? 'Yes' : 'No'}</span></td>
+                    <td>
+                        <div style="display:flex; gap:4px;">
+                            <button class="btn-sm btn-sm-blue" onclick="alert('Edit member')">Edit</button>
+                            <button class="btn-sm btn-sm-red" onclick="if(confirm('Delete member?')){}">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+
+        // Attendance
+        const aBody = document.getElementById('attendance-table-body');
+        attendanceData.forEach((a, i) => {
+            aBody.innerHTML += `
+                <tr>
+                    <td style="font-weight:700; color:#fff;">${a.member}</td>
+                    <td style="color:var(--gym-text-light); font-size:13px;">${a.time} • ${a.date}</td>
+                    <td style="color:#fff; font-size:13px;">${a.source}</td>
+                    <td style="color:var(--gym-text-muted); font-size:12px; font-family:monospace;">${a.session}</td>
+                    <td><span class="badge ${a.synced ? 'badge-green' : 'badge-yellow'}">${a.synced ? 'Yes' : 'Pending'}</span></td>
+                    <td>
+                        <button class="btn-sm btn-sm-blue" onclick="alert('View details')">View</button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        // Payments
+        const pBody = document.getElementById('payments-table-body');
+        paymentsData.forEach((p, i) => {
+            const statusClass = p.status === 'paid' ? 'status-paid' : p.status === 'pending' ? 'status-pending' : 'status-failed';
+            pBody.innerHTML += `
+                <tr>
+                    <td style="font-weight:700; color:#fff;">${p.member}</td>
+                    <td style="color:var(--gym-text-muted); font-size:12px; font-family:monospace;">${p.order}</td>
+                    <td style="color:#fff; font-weight:700; font-size:13px;">${p.amount}</td>
+                    <td><span class="${statusClass}">${p.status.toUpperCase()}</span></td>
+                    <td style="color:var(--gym-text-muted); font-size:13px;">${p.provider}</td>
+                    <td style="color:var(--gym-text-muted); font-size:13px;">${p.paidAt}</td>
+                    <td>
+                        <div style="display:flex; gap:4px;">
+                            <button class="btn-sm btn-sm-blue" onclick="alert('Verify payment')">Verify</button>
+                            <button class="btn-sm btn-sm-red" onclick="if(confirm('Refund?')){}">Refund</button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+
+        // Add-Ons
+        const adBody = document.getElementById('addons-table-body');
+        addonsData.forEach((a, i) => {
+            const stockClass = a.stock === 'Unlimited' ? 'badge-green' : a.stock.includes('Left') ? 'badge-yellow' : 'badge-red';
+            adBody.innerHTML += `
+                <tr>
+                    <td style="font-weight:700; color:#fff;">${a.name}</td>
+                    <td style="color:var(--gym-text-light); font-size:13px;">${a.type}</td>
+                    <td style="color:var(--gym-green); font-weight:700; font-size:13px;">${a.price}</td>
+                    <td style="color:var(--gym-text-muted); font-size:13px;">${a.validity}</td>
+                    <td><span class="badge ${stockClass}">${a.stock}</span></td>
+                    <td style="color:var(--gym-text-muted); font-size:13px;">${a.trainer}</td>
+                    <td><span class="badge ${a.available ? 'badge-green' : 'badge-red'}">${a.available ? 'Yes' : 'No'}</span></td>
+                    <td>
+                        <div style="display:flex; gap:4px;">
+                            <button class="btn-sm btn-sm-blue" onclick="alert('Edit stock')">Edit</button>
+                            <button class="btn-sm btn-sm-red" onclick="if(confirm('Disable?')){}">Disable</button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+
+        // Red List
+        const rBody = document.getElementById('redlist-table-body');
+        redlistData.forEach((r, i) => {
+            rBody.innerHTML += `
+                <tr>
+                    <td>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <div style="width:32px; height:32px; background:rgba(245,158,11,0.2); border-radius:16px; display:flex; align-items:center; justify-content:center; font-weight:800; color:var(--gym-orange); font-size:12px;">${r.name.charAt(0)}</div>
+                            <div style="font-weight:700; color:#fff;">${r.name}</div>
+                        </div>
+                    </td>
+                    <td style="color:var(--gym-text-light); font-size:13px;">${r.phone}</td>
+                    <td style="color:#fff; font-size:13px;">${r.plan}</td>
+                    <td style="color:var(--gym-orange); font-weight:800; font-size:13px;">${r.absent} days</td>
+                    <td style="color:var(--gym-text-muted); font-size:13px;">${r.trainer}</td>
+                    <td style="color:var(--gym-text-muted); font-size:13px;">${r.followUp}</td>
+                    <td>
+                        <div style="display:flex; gap:4px;">
+                            <button class="btn-sm btn-sm-green">Call</button>
+                            <button class="btn-sm btn-sm-blue">WhatsApp</button>
+                            <button class="btn-sm btn-sm-red">Outcome</button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+
+        // Follow-Ups
+        const fBody = document.getElementById('followups-table-body');
+        followupsData.forEach((f, i) => {
+            const outcomeColor = f.outcome === 'Will Return' ? 'badge-green' : f.outcome === 'Injured' ? 'badge-red' : f.outcome === 'Travelling' ? 'badge-blue' : 'badge-gray';
+            fBody.innerHTML += `
+                <tr>
+                    <td style="font-weight:700; color:#fff;">${f.member}</td>
+                    <td><span class="badge ${outcomeColor}">${f.outcome}</span></td>
+                    <td style="color:var(--gym-text-muted); font-size:13px;">${f.nextAction}</td>
+                    <td style="color:var(--gym-text-light); font-size:13px;">${f.notes}</td>
+                    <td style="color:var(--gym-text-muted); font-size:13px;">${f.created}</td>
+                    <td>
+                        <button class="btn-sm btn-sm-blue" onclick="alert('Edit follow-up')">Edit</button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        // Plans
+        const plBody = document.getElementById('plans-table-body');
+        plansData.forEach((p, i) => {
+            plBody.innerHTML += `
+                <tr>
+                    <td style="font-weight:700; color:#fff;">${p.name}</td>
+                    <td style="color:var(--gym-text-light); font-size:13px;">${p.type}</td>
+                    <td style="color:var(--gym-green); font-weight:700; font-size:13px;">${p.price}</td>
+                    <td style="color:var(--gym-text-muted); font-size:13px;">${p.duration}</td>
+                    <td style="color:var(--gym-text-light); font-size:12px;">${p.benefits}</td>
+                    <td>
+                        <div style="display:flex; gap:4px;">
+                            <button class="btn-sm btn-sm-blue" onclick="alert('Edit plan')">Edit</button>
+                            <button class="btn-sm btn-sm-red" onclick="if(confirm('Delete?')){}">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+    });
+</script>
+
+</body>
+</html>
