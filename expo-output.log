@@ -1,0 +1,8 @@
+Starting project at D:\MY PROJECTS\SanushaGym\gym-retention-app\mobile
+env: load .env
+env: export EXPO_PUBLIC_SUPABASE_URL EXPO_PUBLIC_SUPABASE_ANON_KEY EXPO_PUBLIC_API_URL EXPO_PUBLIC_SOCKET_URL
+› Port 8081 is being used by another process
+› Skipping dev server
+Input is required, but 'npx expo' is in non-interactive mode.
+Required input:
+> Use port 8082 instead?
