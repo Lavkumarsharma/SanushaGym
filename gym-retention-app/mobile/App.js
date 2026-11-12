@@ -1,4 +1,4 @@
 import { registerRootComponent } from 'expo';
-import { createRoot } from '@expo/router';
+import { App } from 'expo-router/build/qualified-entry';
 
-export default registerRootComponent(createRoot());
+export default registerRootComponent(App);
