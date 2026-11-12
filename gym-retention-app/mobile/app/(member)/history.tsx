@@ -75,11 +75,11 @@ export default function HistoryScreen() {
 
         {/* Filter chips */}
         <View style={styles.filterRow}>
-          {[['All', 'all'], ['This Week', 'week'], ['This Month', 'month']] as const}.map(([label, value]) => (
+          {([['All', 'all'], ['This Week', 'week'], ['This Month', 'month']] as const).map(([label, value]) => (
             <TouchableOpacity
               key={value}
               style={[styles.filterChip, filter === value && styles.filterChipActive]}
-              onPress={() => setFilter(value)}
+              onPress={() => setFilter(value as 'all' | 'week' | 'month')}
             >
               <Text style={[styles.filterText, filter === value && styles.filterTextActive]}>{label}</Text>
             </TouchableOpacity>

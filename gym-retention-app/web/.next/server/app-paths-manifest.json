@@ -1,0 +1,7 @@
+{
+  "/dashboard/page": "app/dashboard/page.js",
+  "/follow-ups/page": "app/follow-ups/page.js",
+  "/red-list/page": "app/red-list/page.js",
+  "/renewals/page": "app/renewals/page.js",
+  "/add-ons/page": "app/add-ons/page.js"
+}

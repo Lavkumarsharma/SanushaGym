@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { supabase, getCurrentMember, getMembership } from '@/services/supabase';
-import { Haptics } from 'expo-haptics';
+import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 
 interface Member {
   id: string;
@@ -55,7 +55,7 @@ export default function MemberHomeScreen() {
     : 0;
 
   const handleCheckIn = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    impactAsync(ImpactFeedbackStyle.Light);
     router.push('/(member)/check-in');
   };
 

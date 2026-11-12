@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, Animated, Easing, Dimensions } from 'react-native';
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { Haptics } from 'expo-haptics';
+import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 
 const { width } = Dimensions.get('window');
 
@@ -50,9 +50,9 @@ export const DaysCounter: React.FC<DaysCounterProps> = ({
       ]).start();
 
       // Haptic success
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Success);
+      impactAsync(ImpactFeedbackStyle.Heavy);
     } else if (count !== prevCount) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      impactAsync(ImpactFeedbackStyle.Light);
     }
   }, [count, showMilestonePulse, isMilestone, prevCount, pulseAnim]);
 
@@ -86,7 +86,7 @@ export const DaysCounter: React.FC<DaysCounterProps> = ({
             },
           ]}
         >
-          {Math.round(countInterpolate)}
+          {Math.round(animatedCount)}
         </Animated.Text>
       </Animated.View>
 

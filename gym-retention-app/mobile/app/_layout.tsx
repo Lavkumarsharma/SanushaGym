@@ -1,6 +1,5 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import { Platform } from 'react-native';
-import { SupabaseProvider } from '@supabase/supabase-js';
 import { createClient } from '@supabase/supabase-js';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -23,14 +22,12 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 export default function RootLayout() {
   return (
     <SafeAreaProvider>
-      <SupabaseProvider client={supabase}>
-        <SocketProvider>
-          <Stack.Navigator
-            screenOptions={{
-              headerShown: false,
-              animation: 'slide_from_right_ios',
-            }}
-          >
+      <SocketProvider>
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+          }}
+        >
             <Stack.Group screenOptions={{ presentation: 'modal' }}>
               <Stack.Screen name="auth-login" component={LoginScreen} options={{ gestureEnabled: true }} />
             </Stack.Group>
@@ -45,7 +42,6 @@ export default function RootLayout() {
             </Stack.Group>
           </Stack.Navigator>
         </SocketProvider>
-      </SupabaseProvider>
-    </SafeAreaProvider>
+      </SafeAreaProvider>
   );
 }

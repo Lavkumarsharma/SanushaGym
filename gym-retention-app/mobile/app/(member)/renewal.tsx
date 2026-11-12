@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { supabase, getMembership, createPayment, verifyPayment } from '@/services/supabase';
-import { Haptics } from 'expo-haptics';
+import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 
 interface PlanDuration {
   label: string;
@@ -71,7 +71,7 @@ export default function RenewalScreen() {
 
   const initiatePayment = async () => {
     setPaymentState({ type: 'pending' });
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    impactAsync(ImpactFeedbackStyle.Light);
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -79,6 +79,7 @@ export default function RenewalScreen() {
 
       const { data, error, orderId } = await createPayment(user.id, finalAmount, selectedPlan.label);
       if (error) throw error;
+      if (!data) throw new Error('Failed to create payment');
 
       // Simulate payment processing (3 seconds)
       setTimeout(async () => {
@@ -86,15 +87,15 @@ export default function RenewalScreen() {
         if (success) {
           await verifyPayment(data.id);
           setPaymentState({ type: 'paid', receiptId: `RCPT-${Math.floor(Math.random() * 90000 + 10000)}` });
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Success);
+          impactAsync(ImpactFeedbackStyle.Heavy);
         } else {
           setPaymentState({ type: 'failed', reason: 'Payment declined by provider' });
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Error);
+          impactAsync(ImpactFeedbackStyle.Heavy);
         }
       }, 3000);
     } catch (err: any) {
       setPaymentState({ type: 'failed', reason: err.message || 'Payment failed' });
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Error);
+      impactAsync(ImpactFeedbackStyle.Heavy);
     }
   };
 
@@ -144,7 +145,7 @@ export default function RenewalScreen() {
                   key={plan.label}
                   style={[styles.planCard, isSelected && styles.planCardSelected]}
                   onPress={() => {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    impactAsync(ImpactFeedbackStyle.Light);
                     setSelectedPlan(plan);
                   }}
                 >

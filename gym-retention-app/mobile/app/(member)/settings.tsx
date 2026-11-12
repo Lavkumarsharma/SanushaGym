@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch } from 'react-native';
 import React, { useState } from 'react';
 import { supabase, updateCommunicationPrefs } from '@/services/supabase';
-import { Haptics } from 'expo-haptics';
+import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 
 export default function SettingsScreen() {
   const [prefs, setPrefs] = useState({
@@ -24,7 +24,7 @@ export default function SettingsScreen() {
         sms_opt_in: prefs.sms,
         push_opt_in: prefs.push,
       });
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Success);
+      impactAsync(ImpactFeedbackStyle.Heavy);
     } catch (err: any) {
       console.error(err);
     }

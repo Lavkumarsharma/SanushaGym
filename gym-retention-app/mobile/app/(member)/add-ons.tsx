@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { supabase, getAddOns } from '@/services/supabase';
-import { Haptics } from 'expo-haptics';
+import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 
 interface AddOn {
   id: string;
@@ -82,13 +82,13 @@ export default function AddOnsScreen() {
                 key={addOn.id}
                 style={styles.card}
                 onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  impactAsync(ImpactFeedbackStyle.Light);
                   setSelected(addOn);
                   setQuantity(1);
                 }}
               >
                 <View style={styles.cardTop}>
-                  <Text style={styles.cardName}>{addOn.name}</div>
+                  <Text style={styles.cardName}>{addOn.name}</Text>
                   <Text style={styles.cardValidity}>Valid {addOn.validity_days} days</Text>
                 </View>
                 <Text style={styles.cardCategory}>{addOn.type.replace('-', ' ').replace(/\b\w/g, (c) => c.toUpperCase())}</Text>
@@ -133,7 +133,7 @@ export default function AddOnsScreen() {
                 </View>
 
                 <TouchableOpacity style={styles.addBtn} onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Success);
+                  impactAsync(ImpactFeedbackStyle.Heavy);
                   setSelected(null);
                 }}>
                   <Text style={styles.addBtnText}>Add {selected.name}</Text>

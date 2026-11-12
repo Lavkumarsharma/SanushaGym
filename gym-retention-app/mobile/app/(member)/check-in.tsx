@@ -1,10 +1,10 @@
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, TextInput } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { Camera } from 'expo-camera';
 import { useRouter } from 'expo-router';
 import { supabase, recordAttendance } from '@/services/supabase';
 import { useSocket } from '@/services/socket';
-import { Haptics } from 'expo-haptics';
+import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 
 export default function CheckInScreen() {
   const router = useRouter();
@@ -59,10 +59,10 @@ export default function CheckInScreen() {
       if (member.user) {
         await recordAttendance(member.user.id, qrCode, 'qr');
         socket?.emit('attendance:updated', { memberId: member.user.id, qrCode, type: 'success' });
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Success);
+        impactAsync(ImpactFeedbackStyle.Heavy);
       }
     } else {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Error);
+      impactAsync(ImpactFeedbackStyle.Heavy);
     }
 
     // Auto dismiss and restart
@@ -88,7 +88,7 @@ export default function CheckInScreen() {
     setScannedQR(manualEntry);
     setResult({ type: 'success', message: 'Attendance recorded via manual entry.' });
     setShowingResult(true);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Success);
+    impactAsync(ImpactFeedbackStyle.Heavy);
     setManualEntry('');
   };
 

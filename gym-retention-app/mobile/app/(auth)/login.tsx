@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
 import React, { useState } from 'react';
 import { signInWithPhone, verifyOtp } from '@/services/supabase';
-import { Haptics } from 'expo-haptics';
+import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 
 export default function LoginScreen() {
   const [phone, setPhone] = useState('');
@@ -21,7 +21,7 @@ export default function LoginScreen() {
       const { error } = await signInWithPhone(phone);
       if (error) throw error;
       setStep('otp');
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      impactAsync(ImpactFeedbackStyle.Light);
     } catch (err: any) {
       setError(err.message || 'Failed to send OTP');
     } finally {
@@ -40,7 +40,7 @@ export default function LoginScreen() {
       const { error } = await verifyOtp(phone, otp);
       if (error) throw error;
       // Navigation handled by auth state listener in layout
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Success);
+      impactAsync(ImpactFeedbackStyle.Heavy);
     } catch (err: any) {
       setError(err.message || 'Invalid OTP');
     } finally {
@@ -61,7 +61,7 @@ export default function LoginScreen() {
       <View style={styles.formContainer}>
         {step === 'phone' ? (
           <>
-            <Text style={styles.fieldLabel}>Mobile Number</Text>
+            <Text style={[styles.fieldLabel, { marginTop: 0 }]}>Mobile Number</Text>
             <View style={styles.inputRow}>
               <Text style={styles.countryCode}>+91</Text>
               <TextInput
@@ -84,7 +84,7 @@ export default function LoginScreen() {
           </>
         ) : (
           <>
-            <Text style={styles.fieldLabel}>Enter OTP</Text>
+            <Text style={[styles.fieldLabel, { marginTop: 20 }]}>Enter OTP</Text>
             <Text style={styles.hintText}>We sent an OTP to {phone}</Text>
             <TextInput
               style={styles.otpInput}
@@ -154,7 +154,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: 'rgba(255,255,255,0.8)',
     marginBottom: 8,
-    marginTop: step === 'otp' ? 20 : 0,
   },
   inputRow: {
     flexDirection: 'row',
